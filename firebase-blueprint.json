@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Information about a user's progress and stats.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "gender": { "type": "string", "enum": ["ikhwan", "akhwat"] },
+        "learningMode": { "type": "string", "enum": ["anak", "mandiri"] },
+        "maxUnlockedLevel": { "type": "integer" },
+        "points": { "type": "integer" },
+        "levelScores": { "type": "object", "description": "A map where key is the level string, and value is the score integer." },
+        "levelWrongLetters": { "type": "object", "description": "A map where key is the level string, and value is an array of integer IDs." },
+        "createdAt": { "type": "string", "format": "timestamp" },
+        "updatedAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["userId", "createdAt", "updatedAt", "maxUnlockedLevel", "points"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "UserProfile" },
+      "description": "User profile document used to persist their progress across devices."
+    }
+  }
+}

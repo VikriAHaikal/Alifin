@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['userId', 'createdAt', 'updatedAt', 'maxUnlockedLevel', 'points'])
+        && data.userId == request.auth.uid // Identity integrity
+        && data.userId is string && data.userId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && data.maxUnlockedLevel is int
+        && data.points is int
+        && (!data.keys().hasAny(['userName']) || (data.userName is string && data.userName.size() <= 200))
+        && (!data.keys().hasAny(['gender']) || (data.gender in ['ikhwan', 'akhwat']))
+        && (!data.keys().hasAny(['learningMode']) || (data.learningMode in ['anak', 'mandiri']))
+        && (!data.keys().hasAny(['levelScores']) || (data.levelScores is map))
+        && (!data.keys().hasAny(['levelWrongLetters']) || (data.levelWrongLetters is map));
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isSignedIn()
+        && isValidId(userId)
+        && request.auth.uid == userId
+        && isValidUserProfile(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+        
+      allow update: if (
+        isSignedIn() 
+        && isValidId(userId)
+        && request.auth.uid == userId
+        && isValidUserProfile(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().userId == existing().userId
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasAny(['updatedAt', 'userName', 'gender', 'learningMode', 'maxUnlockedLevel', 'points', 'levelScores', 'levelWrongLetters'])
+      );
+        
+      allow delete: if false;
+    }
+  }
+}

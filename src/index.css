@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-arabic: 'Amiri', serif;
+  --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes cloud {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(120vw); }
+}
+
+body {
+  font-family: var(--font-sans);
+}
+

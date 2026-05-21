@@ -1,0 +1,21 @@
+{
+  "name": "Alifin - Belajar Mengaji",
+  "short_name": "Alifin",
+  "description": "Aplikasi belajar membaca Al-Qur'an dan Iqra dengan mode anak & mandiri. Dibekali Ustadz AI, kuis interaktif, dan kurikulum terstruktur.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eff8fc",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/ikhwan.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/ikhwan.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
