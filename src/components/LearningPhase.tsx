@@ -226,7 +226,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
                 {currentLetter.name}
               </span>
               {currentLetter.hint && (
-                <p className="text-emerald-700/80 font-bold text-xs sm:text-sm md:text-base px-4 sm:px-5 text-center leading-relaxed bg-emerald-50 py-2 sm:py-3 rounded-xl border border-emerald-100 max-w-[85%] mx-auto">
+                <p className="text-emerald-700/80 font-bold text-xs sm:text-sm md:text-base px-4 sm:px-5 text-center leading-relaxed bg-emerald-50 py-2 sm:py-3 rounded-xl border border-emerald-100 max-w-[85%] mx-auto whitespace-pre-line">
                   💡 {currentLetter.hint}
                 </p>
               )}

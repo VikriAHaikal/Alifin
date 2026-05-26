@@ -284,7 +284,7 @@ export function QuizPhase({ level, onFinish }: Props) {
                     Petunjuk Ustadz
                   </h3>
                   <p className="text-amber-800 font-medium leading-relaxed text-sm md:text-base break-words">
-                    Oops.. bukan yang itu. Coba perhatikan: <strong className="text-amber-950 font-black bg-amber-200/50 px-2 rounded break-words inline-block mt-1">"{currentQ.hint}"</strong>
+                    Oops.. bukan yang itu. Coba perhatikan: <strong className="text-amber-950 font-black bg-amber-200/50 px-2 rounded break-words whitespace-pre-line inline-block mt-1">"{currentQ.hint}"</strong>
                   </p>
                 </div>
               </motion.div>
