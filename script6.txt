@@ -1,0 +1,101 @@
+    if (level === 13) {
+      const iqra2Tahap6Data = [
+        {
+          char: "بٰقَ",
+          parts: ["بٰ", "قَ"],
+          name: "Baaqa",
+          hint: "Fathah berdiri (garis tegak atas) dibaca panjang 2 harakat.",
+        },
+        {
+          char: "طٰهَ",
+          parts: ["طٰ", "هَ"],
+          name: "Thaaha",
+          hint: "Fathah berdiri sama dengan mad alif (dibaca panjang).",
+        },
+        {
+          char: "يٰسَنَ",
+          parts: ["يٰ", "سَ", "نَ"],
+          name: "Yaasana",
+          hint: "Ya (ي) panjang, perhatikan bentuk fathah berdirinya.",
+        },
+        {
+          char: "هٰذَا",
+          parts: ["هٰ", "ذَ", "ا"],
+          name: "Haadzaa",
+          hint: "Ha dibaca panjang (fathah berdiri), Dza juga dibaca panjang (mad alif).",
+        },
+        {
+          char: "عَلَى",
+          parts: ["عَ", "لَ", "ى"],
+          name: "'Alaa",
+          hint: "Bentuk Ya' (ى) tanpa titik di akhir, huruf sebelumnya (Lam) dibaca panjang.",
+        },
+        {
+          char: "عَلَيَ",
+          parts: ["عَ", "لَ", "يَ"],
+          name: "'Alaya",
+          hint: "Jebakan: Ya' (ي) ini ADA titiknya di bawah, berarti dibaca pendek sebagai 'ya'.",
+        },
+        {
+          char: "فَتَوَى",
+          parts: ["فَ", "تَ", "وَ", "ى"],
+          name: "Fatawaa",
+          hint: "Wau dibaca panjang karena bertemu Ya' tanpa titik (Alif Maqsura).",
+        },
+        {
+          char: "فَتَوَيَ",
+          parts: ["فَ", "تَ", "وَ", "يَ"],
+          name: "Fatawaya",
+          hint: "Jebakan lagi! Perhatikan munculnya dua titik pada huruf Ya' di akhir.",
+        },
+        {
+          char: "طَغَى",
+          parts: ["طَ", "غَ", "ى"],
+          name: "Thaghaa",
+          hint: "Ghain (غ) dibaca panjang (Ghaa) karena ada Ya' tanpa titik.",
+        },
+        {
+          char: "سَجَى",
+          parts: ["سَ", "جَ", "ى"],
+          name: "Sajaa",
+          hint: "Huruf Ja (ج) bersambung dengan Ya' tanpa titik menjadi panjang.",
+        },
+        {
+          char: "سَجَيَ",
+          parts: ["سَ", "جَ", "يَ"],
+          name: "Sajaya",
+          hint: "Bandingkan dengan ini. Ada titik dua di bawah berarti dibaca 'ya' pendek.",
+        },
+        {
+          char: "تَعَالَى",
+          parts: ["تَ", "عَ", "ا", "لَ", "ى"],
+          name: "Ta'aalaa",
+          hint: "'Ain panjang (mad alif), Lam panjang (Ya' tanpa titik).",
+        },
+        {
+          char: "اٰتَى",
+          parts: ["اٰ", "تَ", "ى"],
+          name: "Aataa",
+          hint: "Alif fathah berdiri dibaca panjang, dan Ta bertemu Ya' tanpa titik juga panjang.",
+        },
+        {
+          char: "زَكَى",
+          parts: ["زَ", "كَ", "ى"],
+          name: "Zakaa",
+          hint: "Kaf (ك) bersambung dengan Ya' tanpa titik menjadi Kaa.",
+        },
+        {
+          char: "اٰمَنَ",
+          parts: ["اٰ", "مَ", "نَ"],
+          name: "Aamana",
+          hint: "Alif di awal dengan fathah berdiri, dibaca panjang berayun (Aa).",
+        },
+        {
+          char: "اٰدَمَ",
+          parts: ["اٰ", "دَ", "مَ"],
+          name: "Aadama",
+          hint: "Alif fathah berdiri (Aa). Perhatikan huruf Da dan Ma.",
+        },
+        {
+          char: "مَتَى",
+          parts: ["مَ", "تَ", "ى"],

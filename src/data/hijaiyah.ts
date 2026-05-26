@@ -223,6 +223,14 @@ export const hijaiyahLetters = [
     arTTS: "يَ",
     hint: "Seperti angsa dengan dua titik di bawah.",
   },
+  {
+    id: 29,
+    char: "ءَ",
+    name: "A",
+    idTTS: "a",
+    arTTS: "ءَ",
+    hint: "Hamzah dengan harakat fathah, dibaca 'a'.",
+  },
 ];
 
 export interface QuizQuestion {
@@ -424,132 +432,851 @@ export const getLettersForLevel = (level: number) => {
 
   if (volume === 2) {
     const pairs: typeof hijaiyahLetters = [];
-    
-    // Show single letter variations learning cards - skip for level 8 as it focuses solely on 2-letter combos
-    if (level > 8) {
-      baseLetters.forEach(l => {
-        if (l.id === 1) { // Alif
-           pairs.push({
-             ...l,
-             id: 2001,
-             char: "اَ",
-             name: "A",
-             arTTS: "اَ",
-             idTTS: "a",
-             hint: "Alif fathah dibaca pendek 'a'"
-           });
-           pairs.push({
-             ...l,
-             id: 2002,
-             char: "اَا",
-             name: "Aa",
-             arTTS: "اَا",
-             idTTS: "a",
-             hint: "Alif bertemu alif mati dibaca panjang 'aa'"
-           });
-           
-           if (normalizedLevel >= 5) {
-              pairs.push({
-                ...l,
-                id: 2003,
-                char: "ا\u0670",
-                name: "Aa",
-                arTTS: "ا\u0670",
-                idTTS: "a",
-                hint: "Fathah berdiri, dibaca panjang 'aa'"
-              });
-           }
+
+    // Show single letter variations learning cards - skip for level 8 and 9 as it focuses solely on letter combos
+    if (level > 9) {
+      baseLetters.forEach((l) => {
+        if (l.id === 1) {
+          // Alif
+          pairs.push({
+            ...l,
+            id: 2001,
+            char: "اَ",
+            name: "A",
+            arTTS: "اَ",
+            idTTS: "a",
+            hint: "Alif fathah dibaca pendek 'a'",
+          });
+          pairs.push({
+            ...l,
+            id: 2002,
+            char: "اَا",
+            name: "Aa",
+            arTTS: "اَا",
+            idTTS: "a",
+            hint: "Alif bertemu alif mati dibaca panjang 'aa'",
+          });
+
+          if (normalizedLevel >= 5) {
+            pairs.push({
+              ...l,
+              id: 2003,
+              char: "ا\u0670",
+              name: "Aa",
+              arTTS: "ا\u0670",
+              idTTS: "a",
+              hint: "Fathah berdiri, dibaca panjang 'aa'",
+            });
+          }
         } else {
-           pairs.push({
-             ...l,
-             id: 2000 + l.id,
-             char: l.char + "ا",
-             name: l.name + (l.name.toLowerCase().endsWith('a') ? "a" : "aa"),
-             arTTS: l.arTTS + "ا",
-             idTTS: l.idTTS,
-             hint: `${l.name} bertemu alif dibaca panjang`
-           });
-           
-           if (normalizedLevel >= 5) {
-              pairs.push({
-                 ...l,
-                 id: 3000 + l.id,
-                 char: l.char.replace("\u064E", "\u0670"),
-                 name: l.name + (l.name.toLowerCase().endsWith('a') ? "a" : "aa"),
-                 arTTS: l.arTTS.replace("\u064E", "\u0670"),
-                 idTTS: l.idTTS,
-                 hint: `Fathah berdiri dibaca panjang`
-              });
-           }
+          pairs.push({
+            ...l,
+            id: 2000 + l.id,
+            char: l.char + "ا",
+            name: l.name + (l.name.toLowerCase().endsWith("a") ? "a" : "aa"),
+            arTTS: l.arTTS + "ا",
+            idTTS: l.idTTS,
+            hint: `${l.name} bertemu alif dibaca panjang`,
+          });
+
+          if (normalizedLevel >= 5) {
+            pairs.push({
+              ...l,
+              id: 3000 + l.id,
+              char: l.char.replace("\u064E", "\u0670"),
+              name: l.name + (l.name.toLowerCase().endsWith("a") ? "a" : "aa"),
+              arTTS: l.arTTS.replace("\u064E", "\u0670"),
+              idTTS: l.idTTS,
+              hint: `Fathah berdiri dibaca panjang`,
+            });
+          }
         }
       });
     }
 
-    const poolBase = hijaiyahLetters.slice(0, 28);
-
-    const volume2ComboCount = level === 8 ? 14 : 15;
-    const firstLetterPool = level === 8 ? poolBase : (baseLetters.length > 0 ? baseLetters : poolBase);
-
-    // Force some examples with 'a' in the middle/end and identical sambung if we have Ba, Ta, Tsa in the pool
     if (level === 8) {
-      combos.push({
-        id: 108000,
-        char: "بَبَ",
-        parts: ["بَ", "بَ"],
-        name: "Ba ba",
-        idTTS: "ba ba",
-        arTTS: "بَ ، بَ",
-        hint: "Titik satu di bawah = Ba",
-      } as any);
-      combos.push({
-        id: 108001,
-        char: "تَتَ",
-        parts: ["تَ", "تَ"],
-        name: "Ta ta",
-        idTTS: "ta ta",
-        arTTS: "تَ ، تَ",
-        hint: "Titik dua di atas = Ta",
-      } as any);
-      combos.push({
-        id: 108002,
-        char: "ثَثَ",
-        parts: ["ثَ", "ثَ"],
-        name: "Tsa tsa",
-        idTTS: "tsa tsa",
-        arTTS: "ثَ ، ثَ",
-        hint: "Titik tiga di atas = Tsa",
-      } as any);
-      combos.push({
-        id: 108003,
-        char: "بَاَ",
-        parts: ["بَ", "اَ"],
-        name: "Ba a",
-        idTTS: "ba a",
-        arTTS: "بَ ، اَ",
-        hint: "Alif (ا) di akhir dibaca pendek 'a'",
-      } as any);
-      combos.push({
-        id: 108004,
-        char: "تَاَ",
-        parts: ["تَ", "اَ"],
-        name: "Ta a",
-        idTTS: "ta a",
-        arTTS: "تَ ، اَ",
-        hint: "Alif (ا) di akhir dibaca pendek 'a'",
-      } as any);
-      combos.push({
-        id: 108005,
-        char: "اَبَ",
-        parts: ["اَ", "بَ"],
-        name: "A ba",
-        idTTS: "a ba",
-        arTTS: "اَ ، بَ",
-        hint: "Alif (ا) di awal tidak bisa nyambung ke kiri",
-      } as any);
+      const iqra2Tahap1Data = [
+        { char: "بَبَ", parts: ["بَ", "بَ"], name: "Baba" },
+        { char: "تَتَ", parts: ["تَ", "تَ"], name: "Tata" },
+        { char: "ثَثَ", parts: ["ثَ", "ثَ"], name: "Tsatsa" },
+        { char: "نَنَ", parts: ["نَ", "نَ"], name: "Nana" },
+        { char: "يَيَ", parts: ["يَ", "يَ"], name: "Yaya" },
+        { char: "بَتَ", parts: ["بَ", "تَ"], name: "Bata" },
+        { char: "تَبَ", parts: ["تَ", "بَ"], name: "Taba" },
+        { char: "تَثَ", parts: ["تَ", "ثَ"], name: "Tatsa" },
+        { char: "ثَتَ", parts: ["ثَ", "تَ"], name: "Tsata" },
+        { char: "بَنَ", parts: ["بَ", "نَ"], name: "Bana" },
+        { char: "نَبَ", parts: ["نَ", "بَ"], name: "Naba" },
+        { char: "تَنَ", parts: ["تَ", "نَ"], name: "Tana" },
+        { char: "نَتَ", parts: ["نَ", "تَ"], name: "Nata" },
+        { char: "يَنَ", parts: ["يَ", "نَ"], name: "Yana" },
+        { char: "نَيَ", parts: ["نَ", "يَ"], name: "Naya" },
+        { char: "بَيَ", parts: ["بَ", "يَ"], name: "Baya" },
+        { char: "يَبَ", parts: ["يَ", "بَ"], name: "Yaba" },
+        { char: "تَيَ", parts: ["تَ", "يَ"], name: "Taya" },
+        { char: "يَتَ", parts: ["يَ", "تَ"], name: "Yata" },
+        { char: "بَاَ", parts: ["بَ", "ءَ"], name: "Baa" },
+      ];
+
+      return iqra2Tahap1Data.map(
+        (item, index) =>
+          ({
+            id: 108000 + index,
+            char: item.char,
+            parts: item.parts,
+            name: item.name,
+            idTTS: item.name.toLowerCase().replace(/\s+/g, ""),
+            arTTS: item.parts.join(" ، "),
+            hint:
+              item.name === "Baa"
+                ? "Hamzah di akhir"
+                : "Penyambungan dua huruf",
+          }) as any,
+      );
     }
 
+    if (level === 9) {
+      const iqra2Tahap2Data = [
+        { char: "بَتَثَ", parts: ["بَ", "تَ", "ثَ"], name: "Batatsa" },
+        { char: "تَثَبَ", parts: ["تَ", "ثَ", "بَ"], name: "Tatsaba" },
+        { char: "نَبَتَ", parts: ["نَ", "بَ", "تَ"], name: "Nabata" },
+        { char: "يَنَبَ", parts: ["يَ", "نَ", "بَ"], name: "Yanaba" },
+        { char: "بَءَجَ", parts: ["بَ", "ءَ", "جَ"], name: "Baaja" },
+        { char: "جَحَخَ", parts: ["جَ", "حَ", "خَ"], name: "Jahakho" },
+        { char: "سَبَتَ", parts: ["سَ", "بَ", "تَ"], name: "Sabata" },
+        { char: "حَسَنَ", parts: ["حَ", "سَ", "نَ"], name: "Hasana" },
+        { char: "خَـلَقَ", parts: ["خَ", "لَ", "قَ"], name: "Kholoqo" },
+        { char: "صَدَقَ", parts: ["صَ", "دَ", "قَ"], name: "Shodaqo" },
+        { char: "كَفَرَ", parts: ["كَ", "فَ", "رَ"], name: "Kafaro" },
+        { char: "ضَرَبَ", parts: ["ضَ", "رَ", "بَ"], name: "Dhoroba" },
+        { char: "ظَلَمَ", parts: ["ظَ", "لَ", "مَ"], name: "Zholama" },
+        { char: "عَمَلَ", parts: ["عَ", "مَ", "لَ"], name: "Amala" },
+        { char: "غَفَرَ", parts: ["غَ", "فَ", "رَ"], name: "Ghofaro" },
+        { char: "فَتَحَ", parts: ["فَ", "تَ", "حَ"], name: "Fataha" },
+        { char: "قَتَلَ", parts: ["قَ", "تَ", "لَ"], name: "Qotala" },
+        { char: "مَرَضَ", parts: ["مَ", "رَ", "ضَ"], name: "Marodho" },
+      ];
+
+      return iqra2Tahap2Data.map(
+        (item, index) =>
+          ({
+            id: 109000 + index,
+            char: item.char,
+            parts: item.parts,
+            name: item.name,
+            idTTS: item.name.toLowerCase().replace(/\s+/g, ""),
+            arTTS: item.parts.join(" ، "),
+            hint: item.name.includes("aaja")
+              ? "Hamzah (ء) di tengah dibaca 'a'"
+              : "Penyambungan 3 huruf",
+          }) as any,
+      );
+    }
+
+    if (level === 10) {
+      const iqra2Tahap3Data = [
+        {
+          char: "لَعَلَ",
+          parts: ["لَ", "عَ", "لَ"],
+          name: "La'ala",
+          hint: "Ain (ع) di tengah",
+        },
+        {
+          char: "يَفَعَ",
+          parts: ["يَ", "فَ", "عَ"],
+          name: "Yafa'a",
+          hint: "Fa (ف) di tengah",
+        },
+        {
+          char: "صَنَعَ",
+          parts: ["صَ", "نَ", "عَ"],
+          name: "Shona'a",
+          hint: "Ain (ع) di akhir",
+        },
+        {
+          char: "وَضَعَ",
+          parts: ["وَ", "ضَ", "عَ"],
+          name: "Wadho'a",
+          hint: "Ain (ع) di akhir",
+        },
+        {
+          char: "سَمَعَ",
+          parts: ["سَ", "مَ", "عَ"],
+          name: "Sama'a",
+          hint: "Mim (م) dengan Ain (ع) di akhir",
+        },
+        {
+          char: "عَبَسَ",
+          parts: ["عَ", "بَ", "سَ"],
+          name: "'Abasa",
+          hint: "Ain (ع) di awal",
+        },
+        {
+          char: "غَسَقَ",
+          parts: ["غَ", "سَ", "قَ"],
+          name: "Ghosaqo",
+          hint: "Ghain (غ) di awal",
+        },
+        {
+          char: "بَلَغَ",
+          parts: ["بَ", "لَ", "غَ"],
+          name: "Balagho",
+          hint: "Ghain (غ) di akhir",
+        },
+        {
+          char: "فَقَدَ",
+          parts: ["فَ", "قَ", "دَ"],
+          name: "Faqoda",
+          hint: "Fa dan Qaf bersambung",
+        },
+        {
+          char: "شَكَرَ",
+          parts: ["شَ", "كَ", "رَ"],
+          name: "Syakaro",
+          hint: "Kaf (ك) di tengah",
+        },
+        {
+          char: "مَلَكَ",
+          parts: ["مَ", "لَ", "كَ"],
+          name: "Malaka",
+          hint: "Kaf (ك) di akhir",
+        },
+        {
+          char: "هَلَكَ",
+          parts: ["هَ", "لَ", "كَ"],
+          name: "Halaka",
+          hint: "Ha (ه) di awal berubah bentuk",
+        },
+        {
+          char: "بَهَتَ",
+          parts: ["بَ", "هَ", "تَ"],
+          name: "Bahata",
+          hint: "Ha (ه) di tengah berubah bentuk",
+        },
+        {
+          char: "سَفَهَ",
+          parts: ["سَ", "فَ", "هَ"],
+          name: "Safaha",
+          hint: "Ha (ه) di akhir berubah bentuk",
+        },
+        {
+          char: "قَرَءَ",
+          parts: ["قَ", "رَ", "ءَ"],
+          name: "Qoroa",
+          hint: "Hamzah (ء) berdiri sendiri",
+        },
+        {
+          char: "وَبَعَثَ",
+          parts: ["وَ", "بَ", "عَ", "ثَ"],
+          name: "Waba'atsa",
+          hint: "Empat huruf bersambung",
+        },
+        {
+          char: "فَجَعَلَ",
+          parts: ["فَ", "جَ", "عَ", "لَ"],
+          name: "Faja'ala",
+          hint: "Empat huruf bersambung",
+        },
+        {
+          char: "فَـخَـلَقَ",
+          parts: ["فَ", "خَ", "لَ", "قَ"],
+          name: "Fakholoqo",
+          hint: "Empat huruf bersambung",
+        },
+        {
+          char: "فَقَدَرَ",
+          parts: ["فَ", "قَ", "دَ", "رَ"],
+          name: "Faqodaro",
+          hint: "Empat huruf bersambung",
+        },
+        {
+          char: "وَضَرَبَ",
+          parts: ["وَ", "ضَ", "رَ", "بَ"],
+          name: "Wadhoroba",
+          hint: "Empat huruf bersambung",
+        },
+      ];
+
+      return iqra2Tahap3Data.map(
+        (item, index) =>
+          ({
+            id: 110000 + index,
+            char: item.char,
+            parts: item.parts,
+            name: item.name,
+            idTTS: item.name.toLowerCase().replace(/\s+/g, ""),
+            arTTS: item.parts.join(" ، "),
+            hint: item.hint || "Penyambungan huruf kompleks",
+          }) as any,
+      );
+    }
+
+    if (level === 11) {
+      const iqra2Tahap4Data = [
+        {
+          char: "لَا",
+          parts: ["لَ", "اَ"],
+          name: "Laa",
+          hint: "Lam-Alif (لا) tanpa hamzah dibaca panjang",
+        },
+        {
+          char: "لَأَ",
+          parts: ["لَ", "ءَ"],
+          name: "Laa",
+          idTTS: "la_a",
+          hint: "Lam-Alif dengan hamzah (لَأَ) dibaca pendek (La-a)",
+        },
+        {
+          char: "بَلَا",
+          parts: ["بَ", "لَ", "اَ"],
+          name: "Balaa",
+          hint: "Lam-Alif (لا) bersambung di akhir",
+        },
+        {
+          char: "بَلَأَ",
+          parts: ["بَ", "لَ", "ءَ"],
+          name: "Balaa",
+          idTTS: "bala_a",
+          hint: "Lam-Alif + hamzah (لَأَ) di akhir dibaca pendek (Ba-la-a)",
+        },
+        {
+          char: "نَعَمَ",
+          parts: ["نَ", "عَ", "مَ"],
+          name: "Na'ama",
+          hint: "Bentuk 'Ain (ع) di tengah bersambung awas keliru dengan Mim (م)",
+        },
+        {
+          char: "شَغَفَ",
+          parts: ["شَ", "غَ", "فَ"],
+          name: "Syaghofa",
+          hint: "Bentuk Ghain (غ) di tengah, perhatikan titiknya awas keliru dengan Fa (ف)",
+        },
+        {
+          char: "تَعَبَ",
+          parts: ["تَ", "عَ", "بَ"],
+          name: "Ta'aba",
+          hint: "Bentuk 'Ain (ع) di tengah bersambung",
+        },
+        {
+          char: "مَنَعَ",
+          parts: ["مَ", "نَ", "عَ"],
+          name: "Mana'a",
+          hint: "Bentuk 'Ain (ع) di akhir bersambung",
+        },
+        {
+          char: "هَهَ",
+          parts: ["هَ", "هَ"],
+          name: "Haha",
+          hint: "Perubahan bentuk Ha (ه) di awal dan akhir",
+        },
+        {
+          char: "بَهَهَ",
+          parts: ["بَ", "هَ", "هَ"],
+          name: "Bahaha",
+          hint: "Bentuk Ha (ه) di tengah (\u200Dه\u200D) dan akhir (\u200Dه)",
+        },
+        {
+          char: "تَةَ",
+          parts: ["تَ", "ةَ"],
+          name: "Tata",
+          hint: "Ta biasa (ت) dan Ta Marbuthah (ة) dibaca sama",
+        },
+        {
+          char: "صَلَاةَ",
+          parts: ["صَ", "لَ", "اَ", "ةَ"],
+          name: "Sholaata",
+          hint: "Lam Alif (لا) dan Ta Marbuthah (ة)",
+        },
+        {
+          char: "كَكَ",
+          parts: ["كَ", "كَ"],
+          name: "Kaka",
+          hint: "Perbedaan Kaf (ك) di awal/tengah dan di akhir",
+        },
+        {
+          char: "مَكَكَ",
+          parts: ["مَ", "كَ", "كَ"],
+          name: "Makaka",
+          hint: "Kaf (ك) di tengah dan bersambung di akhir",
+        },
+        {
+          char: "يَيَ",
+          parts: ["يَ", "يَ"],
+          name: "Yaya",
+          hint: "Perubahan bentuk Ya (ي) di awal dan akhir",
+        },
+        {
+          char: "مَيَيَ",
+          parts: ["مَ", "يَ", "يَ"],
+          name: "Mayaya",
+          hint: "Perhatikan bentuk dua Ya (ي) bersambung di akhir",
+        },
+        {
+          char: "بَنَيَ",
+          parts: ["بَ", "نَ", "يَ"],
+          name: "Banaya",
+          hint: "Sama bentuk awal/tengah, perhatikan letak titik",
+        },
+        {
+          char: "تَثَنَ",
+          parts: ["تَ", "ثَ", "نَ"],
+          name: "Tatsana",
+          hint: "Mirip: Ta (2 atas), Tsa (3 atas), Na (1 atas)",
+        },
+        {
+          char: "فَجَعَلَ",
+          parts: ["فَ", "جَ", "عَ", "لَ"],
+          name: "Faja'ala",
+          hint: "Empat huruf bersambung kompleks dengan 'Ain di tengah",
+        },
+        {
+          char: "لَـخَـلَقَ",
+          parts: ["لَ", "خَ", "لَ", "قَ"],
+          name: "Lakholoqo",
+          hint: "Empat huruf bersambung kompleks",
+        },
+      ];
+
+      return iqra2Tahap4Data.map(
+        (item, index) =>
+          ({
+            id: 111000 + index,
+            char: item.char,
+            parts: item.parts,
+            name: item.name,
+            idTTS:
+              (item as any).idTTS ||
+              item.name.toLowerCase().replace(/\s+/g, ""),
+            arTTS: item.parts.join(" ، "),
+            hint: item.hint || "Penyambungan huruf kompleks",
+          }) as any,
+      );
+    }
+
+    if (level === 12) {
+      const iqra2Tahap5Data = [
+        {
+          char: "بَابَ",
+          parts: ["بَ", "ا", "بَ"],
+          name: "Baaba",
+          hint: "Fathah diikuti Alif dibaca panjang 2 harakat (Mad). Awas tertukar panjang-pendeknya!",
+        },
+        {
+          char: "بَبَا",
+          parts: ["بَ", "بَ", "ا"],
+          name: "Babaa",
+          hint: "Alif di akhir, maka huruf terakhir yang dibaca panjang.",
+        },
+        {
+          char: "بَاتَا",
+          parts: ["بَ", "ا", "تَ", "ا"],
+          name: "Baataa",
+          hint: "Kedua huruf dibaca panjang.",
+        },
+        {
+          char: "تَابَ",
+          parts: ["تَ", "ا", "بَ"],
+          name: "Taaba",
+          hint: "Perhatikan Ta panjang, Ba pendek.",
+        },
+        {
+          char: "كَانَ",
+          parts: ["كَ", "ا", "نَ"],
+          name: "Kaana",
+          hint: "Sambungan Kaf (ك) dengan Alif, Ka dibaca panjang.",
+        },
+        {
+          char: "غَاسَقَ",
+          parts: ["غَ", "ا", "سَ", "قَ"],
+          name: "Ghaasaqa",
+          hint: "Ghain (غ) panjang, awas keliru dengan huruf lainnya.",
+        },
+        {
+          char: "ضَاقَ",
+          parts: ["ضَ", "ا", "قَ"],
+          name: "Dhaaqa",
+          hint: "Dhod (ض) panjang.",
+        },
+        {
+          char: "طَافَ",
+          parts: ["طَ", "ا", "فَ"],
+          name: "Thaafa",
+          hint: "Tho (ط) panjang.",
+        },
+        {
+          char: "عَابَدَ",
+          parts: ["عَ", "ا", "بَ", "دَ"],
+          name: "'Aabada",
+          hint: "'Ain (ع) panjang, awas jebakan huruf pendek setelahnya.",
+        },
+        {
+          char: "قَالَ",
+          parts: ["قَ", "ا", "لَ"],
+          name: "Qaala",
+          hint: "Qaf panjang bertemu Lam pendek. (Jangan tertukar Alif dan Lam)",
+        },
+        {
+          char: "مَالَ",
+          parts: ["مَ", "ا", "لَ"],
+          name: "Maala",
+          hint: "Mim panjang bertemu Lam pendek.",
+        },
+        {
+          char: "رَامَ",
+          parts: ["رَ", "ا", "مَ"],
+          name: "Raama",
+          hint: "Ro (ر) tidak bersambung dengan Alif setelahnya.",
+        },
+        {
+          char: "زَادَ",
+          parts: ["زَ", "ا", "دَ"],
+          name: "Zaada",
+          hint: "Zai (ز) dan Dal (د) sama-sama tidak bersambung ke kiri.",
+        },
+        {
+          char: "هَاجَرَ",
+          parts: ["هَ", "ا", "جَ", "رَ"],
+          name: "Haajara",
+          hint: "Ha (ه) panjang, huruf lainnya pendek.",
+        },
+        {
+          char: "شَاءَ",
+          parts: ["شَ", "ا", "ءَ"],
+          name: "Syaaa",
+          hint: "Syin (ش) panjang, Hamzah (ء) sendiri dibaca pendek.",
+        },
+        {
+          char: "مَقَامَ",
+          parts: ["مَ", "قَ", "ا", "مَ"],
+          name: "Maqaama",
+          hint: "Sambungan 4 huruf, Qaf (ق) di tengah dibaca panjang.",
+        },
+        {
+          char: "بَنَاهَا",
+          parts: ["بَ", "نَ", "ا", "هَ", "ا"],
+          name: "Banaahaa",
+          hint: "Na dan Ha panjang. Ba pendek. Awas jebakan sambungan!",
+        },
+        {
+          char: "حَاسَدَ",
+          parts: ["حَ", "ا", "سَ", "دَ"],
+          name: "Haasada",
+          hint: "Ha (ح) panjang, awas tertukar.",
+        },
+      ];
+
+      return iqra2Tahap5Data.map(
+        (item, index) =>
+          ({
+            id: 112000 + index,
+            char: item.char,
+            parts: item.parts,
+            name: item.name,
+            idTTS:
+              (item as any).idTTS ||
+              item.name.toLowerCase().replace(/\s+/g, ""),
+            arTTS: item.parts.join(" ، "),
+            hint: item.hint || "Latihan Mad Fathah (panjang 2 harakat)",
+          }) as any,
+      );
+    }
+
+    if (level === 13) {
+      const iqra2Tahap6Data = [
+        {
+          char: "بٰقَ",
+          parts: ["بٰ", "قَ"],
+          name: "Baaqa",
+          hint: "Fathah berdiri (garis tegak atas) dibaca panjang 2 harakat.",
+        },
+        {
+          char: "طٰهَ",
+          parts: ["طٰ", "هَ"],
+          name: "Thaaha",
+          hint: "Fathah berdiri sama dengan mad alif (dibaca panjang).",
+        },
+        {
+          char: "يٰسَنَ",
+          parts: ["يٰ", "سَ", "نَ"],
+          name: "Yaasana",
+          hint: "Ya (ي) panjang, perhatikan bentuk fathah berdirinya.",
+        },
+        {
+          char: "هٰذَا",
+          parts: ["هٰ", "ذَ", "ا"],
+          name: "Haadzaa",
+          hint: "Ha dibaca panjang (fathah berdiri), Dza juga dibaca panjang (mad alif).",
+        },
+        {
+          char: "عَلَى",
+          parts: ["عَ", "لَ", "ى"],
+          name: "'Alaa",
+          hint: "Bentuk Ya' (ى) tanpa titik di akhir, huruf sebelumnya (Lam) dibaca panjang.",
+        },
+        {
+          char: "عَلَيَ",
+          parts: ["عَ", "لَ", "يَ"],
+          name: "'Alaya",
+          hint: "Jebakan: Ya' (ي) ini ADA titiknya di bawah, berarti dibaca pendek sebagai 'ya'.",
+        },
+        {
+          char: "فَتَوَى",
+          parts: ["فَ", "تَ", "وَ", "ى"],
+          name: "Fatawaa",
+          hint: "Wau dibaca panjang karena bertemu Ya' tanpa titik (Alif Maqsura).",
+        },
+        {
+          char: "فَتَوَيَ",
+          parts: ["فَ", "تَ", "وَ", "يَ"],
+          name: "Fatawaya",
+          hint: "Jebakan lagi! Perhatikan munculnya dua titik pada huruf Ya' di akhir.",
+        },
+        {
+          char: "طَغَى",
+          parts: ["طَ", "غَ", "ى"],
+          name: "Thaghaa",
+          hint: "Ghain (غ) dibaca panjang (Ghaa) karena ada Ya' tanpa titik.",
+        },
+        {
+          char: "سَجَى",
+          parts: ["سَ", "جَ", "ى"],
+          name: "Sajaa",
+          hint: "Huruf Ja (ج) bersambung dengan Ya' tanpa titik menjadi panjang.",
+        },
+        {
+          char: "سَجَيَ",
+          parts: ["سَ", "جَ", "يَ"],
+          name: "Sajaya",
+          hint: "Bandingkan dengan ini. Ada titik dua di bawah berarti dibaca 'ya' pendek.",
+        },
+        {
+          char: "تَعَالَى",
+          parts: ["تَ", "عَ", "ا", "لَ", "ى"],
+          name: "Ta'aalaa",
+          hint: "'Ain panjang (mad alif), Lam panjang (Ya' tanpa titik).",
+        },
+        {
+          char: "اٰتَى",
+          parts: ["اٰ", "تَ", "ى"],
+          name: "Aataa",
+          hint: "Alif fathah berdiri dibaca panjang, dan Ta bertemu Ya' tanpa titik juga panjang.",
+        },
+        {
+          char: "زَكَى",
+          parts: ["زَ", "كَ", "ى"],
+          name: "Zakaa",
+          hint: "Kaf (ك) bersambung dengan Ya' tanpa titik menjadi Kaa.",
+        },
+        {
+          char: "اٰمَنَ",
+          parts: ["اٰ", "مَ", "نَ"],
+          name: "Aamana",
+          hint: "Alif di awal dengan fathah berdiri, dibaca panjang berayun (Aa).",
+        },
+        {
+          char: "اٰدَمَ",
+          parts: ["اٰ", "دَ", "مَ"],
+          name: "Aadama",
+          hint: "Alif fathah berdiri (Aa). Perhatikan huruf Da dan Ma.",
+        },
+        {
+          char: "مَتَى",
+          parts: ["مَ", "تَ", "ى"],
+          name: "Mataa",
+          hint: "Ta panjang (Taa).",
+        },
+        {
+          char: "ضَحَى",
+          parts: ["ضَ", "حَ", "ى"],
+          name: "Dhahaa",
+          hint: "Ha (ح) panjang (Haa). Awas tertukar antara huruf Shad dan Dhad.",
+        },
+        {
+          char: "هٰكَذَا",
+          parts: ["هٰ", "كَ", "ذَ", "ا"],
+          name: "Haakadzaa",
+          hint: "Kombinasi Fathah Berdiri (Ha) dan Mad Alif (Dza).",
+        },
+        {
+          char: "مَا طَغَى",
+          parts: ["مَ", "ا", " ", "طَ", "غَ", "ى"],
+          name: "Maa Thaghaa",
+          idTTS: "maa_thaghaa",
+          hint: "Dua kata. Ma panjang (Alif), Gha panjang (Ya' tanpa titik).",
+        },
+      ];
+
+      return iqra2Tahap6Data.map(
+        (item, index) =>
+          ({
+            id: 113000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS:
+              (item as any).idTTS ||
+              item.name.toLowerCase().replace(/\s+/g, ""),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint:
+              item.hint ||
+              "Pelajaran Fathah Berdiri dan Ya' tanpa titik (Alif Maqsura)",
+          }) as any,
+      );
+    }
+
+    if (level === 14) {
+      const iqra2Tahap7Data = [
+        {
+          char: "بَلَغَا",
+          parts: ["بَ", "لَ", "غَ", "ا"],
+          name: "Balaghaa",
+          hint: "3 huruf bersambung pendek. Hanya Gha ujung yang PANJANG.",
+        },
+        {
+          char: "بَالَغَ",
+          parts: ["بَ", "ا", "لَ", "غَ"],
+          name: "Baalagha",
+          hint: "Bandingkan! Awalnya PANJANG (Baa), lalu La dan Gha PENDEK.",
+        },
+        {
+          char: "فَعَلَا",
+          parts: ["فَ", "عَ", "لَ", "ا"],
+          name: "Fa'alaa",
+          hint: "Hati-hati Lam-Alif (لا) di ujung. Fa dan 'A PENDEK, Laa PANJANG.",
+        },
+        {
+          char: "فَاعَلَ",
+          parts: ["فَ", "ا", "عَ", "لَ"],
+          name: "Faa'ala",
+          hint: "Alif di awal! Faa PANJANG, lalu 'A dan La PENDEK.",
+        },
+        {
+          char: "لَأَمَنَ",
+          parts: ["لَ", "ءَ", "مَ", "نَ"],
+          name: "La'amana",
+          hint: "JEBAKAN! Ada Hamzah di atas Lam-Alif. Dibaca PENDEK memutus (La'a-ma-na).",
+        },
+        {
+          char: "لَامَنَ",
+          parts: ["لَ", "ا", "مَ", "نَ"],
+          name: "Laamana",
+          hint: "Tanpa Hamzah! Ini Lam-Alif asli. Laa PANJANG, ma dan na PENDEK.",
+        },
+        {
+          char: "مَقَامَا",
+          parts: ["مَ", "قَ", "ا", "مَ", "ا"],
+          name: "Maqaamaa",
+          hint: "Ma awal pendek. Qaa di tengah PANJANG, Maa ujung PANJANG.",
+        },
+        {
+          char: "مَاقَامَ",
+          parts: ["مَ", "ا", "قَ", "ا", "مَ"],
+          name: "Maaqaama",
+          hint: "Bergeser! Maa awal PANJANG, Qaa tengah PANJANG, Ma ujung PENDEK.",
+        },
+        {
+          char: "فَتَوَى",
+          parts: ["فَ", "تَ", "وَ", "ى"],
+          name: "Fatawaa",
+          hint: "Ya di akhir TANPA titik. Berfungsi sebagai Mad, jadi Waa PANJANG.",
+        },
+        {
+          char: "فَتَوَيَ",
+          parts: ["فَ", "تَ", "وَ", "يَ"],
+          name: "Fatawaya",
+          hint: "Ya di akhir ADA titiknya. Dibaca hidup 'ya' PENDEK!",
+        },
+        {
+          char: "عَمَهَا",
+          parts: ["عَ", "مَ", "هَ", "ا"],
+          name: "'Amahaa",
+          hint: "Empat huruf bersambung! 'A-ma-ha PENDEK semua, disambung Alif jadi haa PANJANG.",
+        },
+        {
+          char: "عَامَهَا",
+          parts: ["عَ", "ا", "مَ", "هَ", "ا"],
+          name: "'Aamahaa",
+          hint: "Sekarang 'Aa awal PANJANG, ma pendek, lalu haa PANJANG.",
+        },
+        {
+          char: "شَجَعَا",
+          parts: ["شَ", "جَ", "عَ", "ا"],
+          name: "Syaja'aa",
+          hint: "Empat bersambung. Sya dan ja PENDEK, 'Aa ujung PANJANG.",
+        },
+        {
+          char: "شَاجَعَ",
+          parts: ["شَ", "ا", "جَ", "عَ"],
+          name: "Syaaja'a",
+          hint: "Syaa awal PANJANG. ja dan 'a di belakang PENDEK.",
+        },
+        {
+          char: "طَحَنَا",
+          parts: ["طَ", "حَ", "نَ", "ا"],
+          name: "Thahanaa",
+          hint: "Empat bersambung rapat. Tha dan ha PENDEK, Naa ber-alif PANJANG.",
+        },
+        {
+          char: "طَاحَنَ",
+          parts: ["طَ", "ا", "حَ", "نَ"],
+          name: "Thaahana",
+          hint: "Perhatikan alifnya! Thaa awal PANJANG, ha dan na PENDEK.",
+        },
+        {
+          char: "خَلَفَا",
+          parts: ["خَ", "لَ", "فَ", "ا"],
+          name: "Khalafaa",
+          hint: "Hitung titik Kha dan Fa! Kha dan la PENDEK, Faa PANJANG.",
+        },
+        {
+          char: "خَالَفَ",
+          parts: ["خَ", "ا", "لَ", "فَ"],
+          name: "Khaalafa",
+          hint: "Khaa AWAL yang PANJANG! la dan fa PENDEK.",
+        },
+        {
+          char: "هَدَيَا",
+          parts: ["هَ", "دَ", "يَ", "ا"],
+          name: "Hadayaa",
+          hint: "Ada alif di belakang Ya (يَا). Jadi yaa dibaca PANJANG.",
+        },
+        {
+          char: "هَدَى",
+          parts: ["هَ", "دَ", "ى"],
+          name: "Hadaa",
+          hint: "Tanpa titik! Da dibaca PANJANG. Huruf di ujung bukan Ya hidup.",
+        },
+      ];
+
+      return iqra2Tahap7Data.map(
+        (item, index) =>
+          ({
+            id: 114000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS:
+              (item as any).idTTS ||
+              item.name.toLowerCase().replace(/\s+/g, "").replace(/'/g, ""),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint || "Ujian Akhir Iqra 2: Ketelitian Sambungan & Mad",
+          }) as any,
+      );
+    }
+
+    const poolBase = hijaiyahLetters; // Use all 29 characters including hamzah
+
+    let volume2ComboCount = 15;
+
+    // We only reach here for volume === 2 AND (level > 9),
+    // because level 8 and 9 returned early.
+    const firstLetterPool = baseLetters.length > 0 ? baseLetters : poolBase;
+
     for (let i = 0; i < volume2ComboCount; i++) {
-      const isThreeLetters = level === 8 ? false : Math.random() > 0.3;
+      let isThreeLetters = Math.random() > 0.3;
+      if (level === 8) isThreeLetters = false;
+      if (level === 9) isThreeLetters = true;
+
       const comboLength = isThreeLetters ? 3 : 2;
       const pickedLetters = [];
       pickedLetters.push(
@@ -578,8 +1305,8 @@ export const getLettersForLevel = (level: number) => {
           };
         }
 
-        // Randomly make it short or long. Level 8 has NO long vowels (no mad).
-        const isLong = level === 8 ? false : Math.random() > 0.6;
+        // Randomly make it short or long. Level 8 and 9 has NO long vowels (no mad).
+        const isLong = level === 8 || level === 9 ? false : Math.random() > 0.6;
         if (!isLong) return l;
 
         // Long variations: Stages 1-4 Alif mati, Stages 5-7 introduce Fathah Berdiri
@@ -648,32 +1375,21 @@ export const getLettersForLevel = (level: number) => {
           idTTS += tl.idTTS;
           arTTS += tl.arTTS;
         } else {
-          const prev = transformedLetters[k - 1];
-          const connects = canConnectToLeft(prev.char);
-
           char += tl.char;
-          finalName += " " + tl.name.toLowerCase();
-          idTTS += " " + tl.idTTS;
+          finalName += tl.name.toLowerCase();
+          idTTS += tl.idTTS;
           arTTS += " ، " + tl.arTTS;
         }
       }
 
-      const formatName = finalName
-        .split(" ")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(" ");
+      const formatName = finalName.charAt(0).toUpperCase() + finalName.slice(1);
 
       let hintAdditions = "";
       if (char.includes("\u0670")) {
         hintAdditions += "\n(Fathah berdiri = panjang)";
       }
-      if (
-        partsArray.some(
-          (p) => p.includes("اَ")
-        )
-      ) {
-        hintAdditions +=
-          "\n(Alif fathah = 'a' pendek)";
+      if (partsArray.some((p) => p.includes("اَ"))) {
+        hintAdditions += "\n(Alif fathah = 'a' pendek)";
       }
 
       combos.push({
@@ -690,9 +1406,6 @@ export const getLettersForLevel = (level: number) => {
       } as any);
     }
 
-    if (level === 8) {
-      return combos; // Level 8 only focuses on 2-letter combos, no single letters
-    }
     return [...baseLetters, ...pairs, ...combos];
   } else {
     // We want to combine from the pool of current level + past levels in same volume + plain fathah
@@ -754,20 +1467,14 @@ export const getLettersForLevel = (level: number) => {
           idTTS += pl.idTTS;
           arTTS += pl.arTTS;
         } else {
-          const prev = pickedLetters[k - 1];
-          const connects = canConnectToLeft(prev.char);
-
           char += pl.char;
-          finalName += " " + pl.name.toLowerCase();
-          idTTS += " " + pl.idTTS;
+          finalName += pl.name.toLowerCase();
+          idTTS += pl.idTTS;
           arTTS += " ، " + pl.arTTS;
         }
       }
 
-      const formatName = finalName
-        .split(" ")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(" ");
+      const formatName = finalName.charAt(0).toUpperCase() + finalName.slice(1);
 
       combos.push({
         id: level * 1000 + i,
@@ -881,7 +1588,9 @@ export const generateQuiz = (
       wrongOptions = [];
       let attempts = 0;
       while (wrongOptions.length < 4 && attempts < 20) {
-        let perm = [...parts].sort(() => 0.5 - Math.random()).join(joinSeparator);
+        let perm = [...parts]
+          .sort(() => 0.5 - Math.random())
+          .join(joinSeparator);
         if (!generated.has(perm)) {
           generated.add(perm);
           wrongOptions.push({
@@ -990,8 +1699,8 @@ export const generateQuiz = (
       question: isAudio
         ? `Dengarkan suara Ustadz. Huruf apakah ini?`
         : isTargetCombo && volume >= 2 && Math.random() > 0.4
-        ? `Bagaimana bentuk sambung dari ${(target as any).parts.join(" + ")} ?`
-        : `Huruf apakah ini: "${target.name}"?`,
+          ? `Bagaimana bentuk sambung dari ${(target as any).parts.join(" + ")} ?`
+          : `Huruf apakah ini: "${target.name}"?`,
       correctAnswer: target.char,
       options,
       hint: target.hint,

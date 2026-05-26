@@ -1,0 +1,101 @@
+    if (level === 12) {
+      const iqra2Tahap5Data = [
+        {
+          char: "بَابَ",
+          parts: ["بَ", "ا", "بَ"],
+          name: "Baaba",
+          hint: "Fathah diikuti Alif dibaca panjang 2 harakat (Mad). Awas tertukar panjang-pendeknya!",
+        },
+        {
+          char: "بَبَا",
+          parts: ["بَ", "بَ", "ا"],
+          name: "Babaa",
+          hint: "Alif di akhir, maka huruf terakhir yang dibaca panjang.",
+        },
+        {
+          char: "بَاتَا",
+          parts: ["بَ", "ا", "تَ", "ا"],
+          name: "Baataa",
+          hint: "Kedua huruf dibaca panjang.",
+        },
+        {
+          char: "تَابَ",
+          parts: ["تَ", "ا", "بَ"],
+          name: "Taaba",
+          hint: "Perhatikan Ta panjang, Ba pendek.",
+        },
+        {
+          char: "كَانَ",
+          parts: ["كَ", "ا", "نَ"],
+          name: "Kaana",
+          hint: "Sambungan Kaf (ك) dengan Alif, Ka dibaca panjang.",
+        },
+        {
+          char: "غَاسَقَ",
+          parts: ["غَ", "ا", "سَ", "قَ"],
+          name: "Ghaasaqa",
+          hint: "Ghain (غ) panjang, awas keliru dengan huruf lainnya.",
+        },
+        {
+          char: "ضَاقَ",
+          parts: ["ضَ", "ا", "قَ"],
+          name: "Dhaaqa",
+          hint: "Dhod (ض) panjang.",
+        },
+        {
+          char: "طَافَ",
+          parts: ["طَ", "ا", "فَ"],
+          name: "Thaafa",
+          hint: "Tho (ط) panjang.",
+        },
+        {
+          char: "عَابَدَ",
+          parts: ["عَ", "ا", "بَ", "دَ"],
+          name: "'Aabada",
+          hint: "'Ain (ع) panjang, awas jebakan huruf pendek setelahnya.",
+        },
+        {
+          char: "قَالَ",
+          parts: ["قَ", "ا", "لَ"],
+          name: "Qaala",
+          hint: "Qaf panjang bertemu Lam pendek. (Jangan tertukar Alif dan Lam)",
+        },
+        {
+          char: "مَالَ",
+          parts: ["مَ", "ا", "لَ"],
+          name: "Maala",
+          hint: "Mim panjang bertemu Lam pendek.",
+        },
+        {
+          char: "رَامَ",
+          parts: ["رَ", "ا", "مَ"],
+          name: "Raama",
+          hint: "Ro (ر) tidak bersambung dengan Alif setelahnya.",
+        },
+        {
+          char: "زَادَ",
+          parts: ["زَ", "ا", "دَ"],
+          name: "Zaada",
+          hint: "Zai (ز) dan Dal (د) sama-sama tidak bersambung ke kiri.",
+        },
+        {
+          char: "هَاجَرَ",
+          parts: ["هَ", "ا", "جَ", "رَ"],
+          name: "Haajara",
+          hint: "Ha (ه) panjang, huruf lainnya pendek.",
+        },
+        {
+          char: "شَاءَ",
+          parts: ["شَ", "ا", "ءَ"],
+          name: "Syaaa",
+          hint: "Syin (ش) panjang, Hamzah (ء) sendiri dibaca pendek.",
+        },
+        {
+          char: "مَقَامَ",
+          parts: ["مَ", "قَ", "ا", "مَ"],
+          name: "Maqaama",
+          hint: "Sambungan 4 huruf, Qaf (ق) di tengah dibaca panjang.",
+        },
+        {
+          char: "بَنَاهَا",
+          parts: ["بَ", "نَ", "ا", "هَ", "ا"],
