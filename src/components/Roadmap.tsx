@@ -67,15 +67,21 @@ const VOLUME_DESCRIPTIONS = [
             <ArrowLeft className="w-6 h-6" />
         </button>
 
-        <div className="text-center mb-16 z-10 w-full px-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm mb-4 border border-emerald-200">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16 z-10 w-full px-6 flex flex-col items-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100/80 backdrop-blur text-emerald-700 font-bold text-sm mb-4 border border-emerald-200 shadow-sm relative">
             <BookOpen className="w-4 h-4" />
             <span>Iqra {selectedVolume}</span>
           </div>
-          <h2 className="text-3xl font-black text-slate-800">
-            Tahapan Belajar
-          </h2>
-        </div>
+          <div className="relative inline-block mb-2 bg-emerald-600 rounded-2xl shadow-sm border-b-[4px] border-emerald-700 px-6 py-3">
+            <h2 className="relative text-xl sm:text-2xl md:text-3xl font-black text-white tracking-wide">
+              Tahapan Belajar
+            </h2>
+          </div>
+        </motion.div>
 
         <div className="w-[320px] mx-auto flex flex-col items-center gap-[40px] relative z-10">
           {/* Context for absolute SVG */}
@@ -152,18 +158,17 @@ const VOLUME_DESCRIPTIONS = [
                         {isExam ? (
                           <Trophy className={`w-10 h-10 ${isCurrent ? 'text-amber-900 fill-amber-900 animate-[bounce_2s_infinite]' : 'text-amber-900 fill-amber-900'}`} />
                         ) : (
-                          <Star className={`w-8 h-8 ${isCurrent ? 'text-white fill-white animate-[bounce_2s_infinite]' : 'text-white fill-white'}`} />
+                          <Star className={`w-10 h-10 ${isCurrent ? 'text-white fill-white animate-[bounce_2s_infinite]' : 'text-white fill-white'}`} />
                         )}
-                        <span className={`${isExam ? 'text-amber-900' : 'text-white'} font-black ${isExam ? 'text-2xl' : 'text-xl'} leading-none mt-1`}>{level}</span>
                       </div>
                     ) : (
-                      <Lock className="w-8 h-8 text-slate-400" />
+                      <Lock className="w-10 h-10 text-slate-400" />
                     )}
 
                     <div className={`absolute -bottom-4 bg-white px-4 py-2 rounded-2xl shadow-sm border-2 whitespace-nowrap font-black text-sm uppercase tracking-widest ${
                       isUnlocked ? (isExam ? 'text-amber-700 border-amber-200' : 'text-emerald-700 border-emerald-100') : 'text-slate-400 border-slate-200'
                     }`}>
-                      {isExam ? 'Ujian Akhir' : `Tahap ${level}`}
+                      {isExam ? 'Ujian Akhir' : `Tahap ${((level - 1) % STAGES_PER_VOLUME) + 1}`}
                     </div>
                   </button>
                 </motion.div>
@@ -188,14 +193,20 @@ const VOLUME_DESCRIPTIONS = [
           <ArrowLeft className="w-6 h-6" />
       </button>
 
-      <div className="text-center mb-16 z-10 w-full px-6">
-        <h2 className="text-3xl font-black text-slate-800">
-          Peta Belajar
-        </h2>
-        <p className="text-slate-500 font-medium mt-2">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-16 z-10 w-full px-6 flex flex-col items-center"
+      >
+        <div className="relative inline-block mb-2 bg-emerald-600 rounded-2xl shadow-sm border-b-[4px] border-emerald-700 px-6 py-3">
+          <h2 className="relative text-xl sm:text-2xl md:text-3xl font-black text-white tracking-wide">
+            Peta Belajar
+          </h2>
+        </div>
+        <p className="text-emerald-700/80 font-bold mt-2 text-xs sm:text-sm md:text-base bg-emerald-50 backdrop-blur-sm px-5 py-2 rounded-full border border-emerald-100 shadow-sm relative z-10 text-center">
           Pilih tingkatan Iqra untuk memulai!
         </p>
-      </div>
+      </motion.div>
 
       <div className="w-[340px] mx-auto flex flex-col items-center gap-[60px] relative z-10">
         {/* Context for absolute SVG */}
@@ -287,13 +298,11 @@ const VOLUME_DESCRIPTIONS = [
                     <div className="flex flex-col items-center gap-1">
                       <BookOpen className={`w-8 h-8 md:w-8 md:h-8 ${textColor}`} />
                       <span className={`${textColor} font-black text-xl md:text-2xl leading-none mt-1`}>Iqra {vol}</span>
-                      <span className={`${textColor} font-bold text-[9px] md:text-[11px] leading-tight text-center px-4 mt-1 opacity-90`}>{VOLUME_DESCRIPTIONS[vol]}</span>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1 items-center text-slate-400 font-bold">
                       <Lock className="w-8 h-8 md:w-8 md:h-8 text-slate-400/80" />
                       <span className="text-xl md:text-2xl mt-1">Iqra {vol}</span>
-                      <span className="text-[9px] md:text-[11px] leading-tight text-center px-4 mt-1 opacity-70">{VOLUME_DESCRIPTIONS[vol]}</span>
                     </div>
                   )}
                 </button>

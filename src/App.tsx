@@ -12,16 +12,17 @@ import { LandingPage } from './components/LandingPage';
 import { LearningPhase } from './components/LearningPhase';
 import { QuizPhase } from './components/QuizPhase';
 import { Feedback } from './components/Feedback';
+import { Profile } from './components/Profile';
 import { UstadzAI } from './components/UstadzAI';
 import { CookieConsent } from './components/CookieConsent';
 import { Volume2, VolumeX, Home, MessageCircle } from 'lucide-react';
 import { playSound } from './lib/sounds';
-import { TOTAL_LEVELS, STAGES_PER_VOLUME } from './data/hijaiyah';
+import { TOTAL_LEVELS, STAGES_PER_VOLUME, getQuestionCount } from './data/hijaiyah';
 import { useAuth } from './lib/AuthContext';
 
 type Gender = 'ikhwan' | 'akhwat' | null;
 
-type ViewState = 'LANDING' | 'ONBOARDING' | 'DASHBOARD' | 'MAP' | 'LEARNING' | 'QUIZ' | 'FEEDBACK';
+type ViewState = 'LANDING' | 'ONBOARDING' | 'DASHBOARD' | 'MAP' | 'LEARNING' | 'QUIZ' | 'FEEDBACK' | 'PROFILE';
 
 const loadState = (key: string, defaultValue: any) => {
   try {
@@ -206,6 +207,8 @@ export default function App() {
       setView('LEARNING');
     } else if (targetView === 'MAP') {
       setView('MAP');
+    } else if (targetView === 'PROFILE') {
+      setView('PROFILE');
     }
   };
 
@@ -221,8 +224,9 @@ export default function App() {
   };
 
   const handleFinishQuiz = (score: number, wrongLetterIds: number[]) => {
-    const isExam = currentLevel % STAGES_PER_VOLUME === 0;
-    const passingScore = isExam ? 12 : 4;
+    const questionCount = getQuestionCount(currentLevel);
+    // Passing score is 80%
+    const passingScore = Math.ceil(questionCount * 0.8);
 
     let newMaxLevel = maxUnlockedLevel;
     if (score >= passingScore) {
@@ -416,12 +420,37 @@ export default function App() {
             <motion.div key="feedback" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full flex flex-col">
               <Feedback 
                 score={lastScore} 
-                total={currentLevel % STAGES_PER_VOLUME === 0 ? 15 : 5} 
+                total={getQuestionCount(currentLevel)} 
                 onNextLevel={handleNextLevel} 
                 onRetry={handleRetry} 
                 isExam={currentLevel % STAGES_PER_VOLUME === 0}
                 userName={userName}
                 currentLevel={currentLevel}
+              />
+            </motion.div>
+          )}
+          {view === 'PROFILE' && (
+            <motion.div key="profile" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full h-full flex items-center justify-center relative z-10 w-full h-full mx-auto p-4">
+              <Profile 
+                name={userName}
+                gender={gender as 'ikhwan' | 'akhwat'}
+                isGuest={!user}
+                onSave={(newName, newGender) => {
+                  setUserName(newName);
+                  setGender(newGender);
+                  if (user) {
+                    updateProfile({ userName: newName, gender: newGender }).catch(console.error);
+                  }
+                  setView('DASHBOARD');
+                }}
+                onBack={() => setView('DASHBOARD')}
+                onReset={handleReset}
+                onUnlockAll={() => {
+                  setMaxUnlockedLevel(TOTAL_LEVELS);
+                  if (user) {
+                    updateProfile({ maxUnlockedLevel: TOTAL_LEVELS }).catch(console.error);
+                  }
+                }}
               />
             </motion.div>
           )}
@@ -431,7 +460,7 @@ export default function App() {
       {/* Home Button and Global Music Toggle overlay if not on onboarding/landing */}
       {gender && view !== 'ONBOARDING' && view !== 'LANDING' && (
         <>
-          {view !== 'DASHBOARD' && view !== 'QUIZ' && view !== 'LEARNING' && view !== 'MAP' && (
+          {view !== 'DASHBOARD' && view !== 'QUIZ' && view !== 'LEARNING' && view !== 'MAP' && view !== 'PROFILE' && (
             <button
               onClick={() => { playSound('back'); setView('DASHBOARD'); }}
               className="fixed top-4 left-4 bg-white/90 backdrop-blur p-3 rounded-full shadow-md text-emerald-700 hover:bg-emerald-50 transition-colors z-50 flex items-center justify-center border-2 border-emerald-100"

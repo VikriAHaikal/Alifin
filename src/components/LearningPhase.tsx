@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, ArrowRight, ArrowLeft, Heart, Target, BookOpen } from 'lucide-react';
 import { getLettersForLevel, IQRA_VOLUMES, STAGES_PER_VOLUME } from '../data/hijaiyah';
@@ -15,6 +15,7 @@ interface Props {
 
 export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterIds = [], onComplete, onBack }: Props) {
   const [isNiatDone, setIsNiatDone] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [learnedCount, setLearnedCount] = useState(0);
   const [learnedIds, setLearnedIds] = useState<Set<number>>(new Set());
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -47,11 +48,21 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
   }, [level, maxLevel, hasScore, wrongLettersStr]);
 
   const playAudio = (letter: typeof letters[0]) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+
     // We add an Arabic comma to let TTS draw out the sound naturally
     const textToPlay = letter.arTTS + ' ،';
     const url = `https://translate.googleapis.com/translate_tts?client=tw-ob&ie=UTF-8&tl=ar&q=${encodeURIComponent(textToPlay)}`;
     
     const audio = new Audio(url);
+    audioRef.current = audio;
     audio.playbackRate = 0.85;
 
     const playPromise = audio.play();
@@ -211,7 +222,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
             </div>
             
             <div className="flex flex-col items-center w-full pb-4 shrink-0">
-              <span className="font-black text-2xl sm:text-3xl md:text-4xl tracking-widest uppercase mb-2">
+              <span className="font-black text-2xl sm:text-3xl md:text-3xl tracking-wide text-slate-800 mb-2 capitalize">
                 {currentLetter.name}
               </span>
               {currentLetter.hint && (

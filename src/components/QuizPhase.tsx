@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, AlertTriangle, Volume2 } from 'lucide-react';
-import { generateQuiz, QuizQuestion } from '../data/hijaiyah';
+import { generateQuiz, QuizQuestion, getQuestionCount } from '../data/hijaiyah';
 import { playSound } from '../lib/sounds';
 
 import { STAGES_PER_VOLUME } from '../data/hijaiyah';
@@ -13,7 +13,8 @@ interface Props {
 
 export function QuizPhase({ level, onFinish }: Props) {
   const isExam = level % STAGES_PER_VOLUME === 0;
-  const [questions] = useState<QuizQuestion[]>(() => generateQuiz(level, isExam ? 15 : 5));
+  const questionCount = getQuestionCount(level);
+  const [questions] = useState<QuizQuestion[]>(() => generateQuiz(level, questionCount));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [wrongLetterIds, setWrongLetterIds] = useState<number[]>([]);
@@ -27,20 +28,25 @@ export function QuizPhase({ level, onFinish }: Props) {
   const [sequencePicks, setSequencePicks] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasPlayedIntro, setHasPlayedIntro] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     // Reset play state and custom sequence state for new question
     setHasPlayedIntro(false);
     setSequencePicks([]);
-    
-    // Auto-play audio if it's an audio or sequence question
-    if (currentQ?.type === 'audio' || currentQ?.type === 'sequence') {
-      playAudio();
-    }
   }, [currentIndex, currentQ?.type]);
 
   const playAudio = () => {
-    if (!currentQ || isPlaying) return;
+    if (!currentQ) return;
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     
     if (currentQ.type === 'audio' || currentQ.type === 'sequence') {
       setIsPlaying(true);
@@ -48,6 +54,7 @@ export function QuizPhase({ level, onFinish }: Props) {
       const url = `https://translate.googleapis.com/translate_tts?client=tw-ob&ie=UTF-8&tl=ar&q=${encodeURIComponent(textToPlay)}`;
       
       const audio = new Audio(url);
+      audioRef.current = audio;
       audio.playbackRate = 0.85;
       audio.onended = () => setIsPlaying(false);
       audio.onerror = () => setIsPlaying(false);
@@ -56,7 +63,6 @@ export function QuizPhase({ level, onFinish }: Props) {
       if (playPromise !== undefined) {
         playPromise.catch(() => {
           if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance();
             msg.lang = 'ar-SA';
             msg.text = currentQ.audioText;
@@ -91,13 +97,13 @@ export function QuizPhase({ level, onFinish }: Props) {
 
   const handleAnswer = (answer: string) => {
     if (currentQ.type === 'sequence') {
-      const parts = currentQ.correctAnswer.split(' ');
+      const parts = currentQ.parts || currentQ.correctAnswer.split(' ');
       const newPicks = [...sequencePicks, answer];
       setSequencePicks(newPicks);
       
       // If sequence is complete
       if (newPicks.length === parts.length) {
-        if (newPicks.join(' ') === currentQ.correctAnswer) {
+        if (newPicks.join('') === parts.join('')) { // Changed logic to be safe regardless of spaces
           evaluateAnswer(true, '');
         } else {
           evaluateAnswer(false, newPicks.join(' '));
@@ -179,7 +185,7 @@ export function QuizPhase({ level, onFinish }: Props) {
             >
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-black mb-6 lg:mb-8 text-center leading-tight flex flex-col items-center gap-4 text-slate-800 w-full shrink-0">
               <span className="bg-white px-6 md:px-8 py-4 md:py-6 rounded-[2rem] shadow-sm border-4 border-slate-200 border-b-[8px] w-full max-w-2xl">{currentQ.question}</span>
-              {currentQ.type === 'audio' && (
+              {(currentQ.type === 'audio' || currentQ.type === 'sequence') && (
                 <motion.button
                   whileHover={{ y: -4 }}
                   whileTap={{ y: 4 }}
@@ -199,7 +205,7 @@ export function QuizPhase({ level, onFinish }: Props) {
             <div className="flex flex-col w-full max-w-2xl shrink-0 gap-6">
               {currentQ.type === 'sequence' && (
                 <div className="flex justify-center gap-3 md:gap-4 mb-2">
-                  {Array.from({ length: currentQ.correctAnswer.split(' ').length }).map((_, i) => (
+                  {Array.from({ length: currentQ.parts?.length || currentQ.correctAnswer.split(' ').length }).map((_, i) => (
                     <motion.button 
                       key={i} 
                       whileTap={sequencePicks[i] ? { scale: 0.95 } : {}}
