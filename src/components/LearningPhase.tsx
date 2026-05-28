@@ -188,7 +188,15 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-3xl mx-auto px-4 md:px-6 py-8 flex flex-col items-center justify-center gap-6 min-h-[400px] relative">
+      <div className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-8 py-4 md:py-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 relative">
+        <button
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
+          className={`hidden md:flex w-16 h-16 lg:w-20 lg:h-20 rounded-[1.5rem] items-center justify-center border-4 transition-all shrink-0 ${currentIndex === 0 ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed border-b-4' : 'bg-white border-emerald-300 border-b-[8px] active:border-b-4 active:translate-y-[4px] text-emerald-600 hover:bg-emerald-50'}`}
+        >
+          <ArrowLeft className="w-8 h-8 lg:w-10 lg:h-10" />
+        </button>
+
         <AnimatePresence mode="wait">
           <motion.button
             key={currentLetter.id}
@@ -199,7 +207,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
             whileHover={{ y: -4 }}
             whileTap={{ y: 4 }}
             onClick={() => playAudio(currentLetter)}
-            className={`w-full max-w-sm sm:max-w-2xl flex-1 min-h-[350px] flex flex-col items-center justify-center p-6 sm:p-8 relative transition-all cursor-pointer ${
+            className={`w-full max-w-sm sm:max-w-md md:max-w-2xl flex-1 min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center p-6 sm:p-8 relative transition-all cursor-pointer ${
               learnedIds.has(currentLetter.id) 
                 ? 'bg-white border-4 border-emerald-400 border-b-[12px] active:border-b-4 text-emerald-800 rounded-[3rem] active:mt-[8px]' 
                 : 'bg-white border-4 border-slate-200 border-b-[12px] active:border-b-4 text-slate-800 rounded-[3rem] active:mt-[8px] hover:border-emerald-300 hover:border-b-emerald-400'
@@ -219,17 +227,17 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
             )}
             
             <div className="flex-1 w-full flex items-center justify-center relative mt-4 sm:mt-6 px-4">
-               <span className={`font-arabic ${currentLetter.char.length > 3 ? 'text-[4rem] sm:text-[5rem] md:text-[6rem]' : 'text-[5rem] sm:text-[6rem] md:text-[7rem]'} font-bold leading-normal text-center drop-shadow-sm flex items-center justify-center flex-1`}>
+               <span className={`font-arabic ${currentLetter.char.length > 3 ? 'text-[4rem] sm:text-[5rem] md:text-[6rem]' : 'text-[5rem] sm:text-[6rem] md:text-[8rem]'} font-bold leading-normal text-center drop-shadow-sm flex items-center justify-center flex-1`}>
                  {currentLetter.char}
                </span>
             </div>
             
-            <div className="flex flex-col items-center w-full pb-4 shrink-0">
-              <span className="font-black text-2xl sm:text-3xl md:text-3xl tracking-wide text-slate-800 mb-2 capitalize">
+            <div className="flex flex-col items-center w-full pb-2 md:pb-4 shrink-0">
+              <span className="font-black text-2xl sm:text-3xl md:text-4xl tracking-wide text-slate-800 mb-2 capitalize">
                 {currentLetter.name}
               </span>
               {currentLetter.hint && (
-                <p className="text-emerald-700/80 font-bold text-xs sm:text-sm md:text-base px-4 sm:px-5 text-center leading-relaxed bg-emerald-50 py-2 sm:py-3 rounded-xl border border-emerald-100 max-w-[85%] mx-auto whitespace-pre-line">
+                <p className="text-emerald-700/80 font-bold text-xs sm:text-sm md:text-base px-4 sm:px-5 text-center leading-relaxed bg-emerald-50 py-2 sm:py-3 rounded-xl border border-emerald-100 max-w-[90%] mx-auto whitespace-pre-line">
                   💡 {currentLetter.hint}
                 </p>
               )}
@@ -237,25 +245,33 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
           </motion.button>
         </AnimatePresence>
 
-        <div className="flex items-center gap-4 sm:gap-6 w-full max-w-sm justify-center shrink-0">
+        <button
+          onClick={handleNext}
+          disabled={currentIndex === letters.length - 1}
+          className={`hidden md:flex w-16 h-16 lg:w-20 lg:h-20 rounded-[1.5rem] items-center justify-center border-4 transition-all shrink-0 ${currentIndex === letters.length - 1 ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed border-b-4' : 'bg-white border-emerald-300 border-b-[8px] active:border-b-4 active:translate-y-[4px] text-emerald-600 hover:bg-emerald-50'}`}
+        >
+          <ArrowRight className="w-8 h-8 lg:w-10 lg:h-10" />
+        </button>
+
+        <div className="flex md:hidden items-center gap-4 sm:gap-6 w-full max-w-sm justify-center shrink-0">
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-[1.5rem] flex items-center justify-center border-4 transition-all shrink-0 ${currentIndex === 0 ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed border-b-4' : 'bg-white border-emerald-300 border-b-[8px] active:border-b-4 active:translate-y-[4px] text-emerald-600'}`}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-[1.5rem] flex items-center justify-center border-4 transition-all shrink-0 ${currentIndex === 0 ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed border-b-4' : 'bg-white border-emerald-300 border-b-[8px] active:border-b-4 active:translate-y-[4px] text-emerald-600'}`}
           >
-            <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+            <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
           
-          <span className="font-black text-slate-400 text-base sm:text-lg md:text-xl min-w-[4rem] text-center">
+          <span className="font-black text-slate-400 text-base sm:text-lg min-w-[4rem] text-center">
             {currentIndex + 1} / {letters.length}
           </span>
 
           <button
             onClick={handleNext}
             disabled={currentIndex === letters.length - 1}
-            className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-[1.5rem] flex items-center justify-center border-4 transition-all shrink-0 ${currentIndex === letters.length - 1 ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed border-b-4' : 'bg-white border-emerald-300 border-b-[8px] active:border-b-4 active:translate-y-[4px] text-emerald-600'}`}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-[1.5rem] flex items-center justify-center border-4 transition-all shrink-0 ${currentIndex === letters.length - 1 ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed border-b-4' : 'bg-white border-emerald-300 border-b-[8px] active:border-b-4 active:translate-y-[4px] text-emerald-600'}`}
           >
-            <ArrowRight className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+            <ArrowRight className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
         </div>
       </div>

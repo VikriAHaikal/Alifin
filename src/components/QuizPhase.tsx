@@ -239,28 +239,53 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -100, opacity: 0 }}
-              className="w-full flex flex-col items-center py-4 shrink-0"
+              className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-10 xl:gap-16 py-4 shrink-0"
             >
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black mb-6 lg:mb-8 text-center leading-tight flex flex-col items-center gap-4 text-slate-800 w-full shrink-0">
-              <span className="bg-white px-6 md:px-8 py-4 md:py-6 rounded-[2rem] shadow-sm border-4 border-slate-200 border-b-[8px] w-full max-w-2xl">{currentQ.question}</span>
-              {(currentQ.type === 'audio' || currentQ.type === 'sequence') && (
-                <motion.button
-                  whileHover={{ y: -4 }}
-                  whileTap={{ y: 4 }}
-                  onClick={playAudio}
-                  disabled={isPlaying}
-                  className={`mt-2 md:mt-4 rounded-[1.5rem] p-4 transition-all border-4 ${
-                    isPlaying 
-                    ? 'bg-amber-400 border-amber-600 text-white animate-pulse border-b-[8px]' 
-                    : 'bg-sky-400 border-sky-600 border-b-[8px] text-white hover:bg-sky-500 active:border-b-4 active:translate-y-[4px] cursor-pointer'
-                  }`}
+            
+            {/* Left side: Question & Audio */}
+            <div className="flex flex-col items-center w-full lg:w-2/5 max-w-2xl shrink-0 lg:sticky lg:top-4">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black mb-4 lg:mb-6 text-center leading-tight flex flex-col items-center gap-4 text-slate-800 w-full shrink-0">
+                <span className="bg-white px-6 md:px-8 py-4 md:py-6 rounded-[2rem] shadow-sm border-4 border-slate-200 border-b-[8px] w-full">{currentQ.question}</span>
+                {(currentQ.type === 'audio' || currentQ.type === 'sequence') && (
+                  <motion.button
+                    whileHover={{ y: -4 }}
+                    whileTap={{ y: 4 }}
+                    onClick={playAudio}
+                    disabled={isPlaying}
+                    className={`mt-2 rounded-[1.5rem] p-4 transition-all border-4 ${
+                      isPlaying 
+                      ? 'bg-amber-400 border-amber-600 text-white animate-pulse border-b-[8px]' 
+                      : 'bg-sky-400 border-sky-600 border-b-[8px] text-white hover:bg-sky-500 active:border-b-4 active:translate-y-[4px] cursor-pointer'
+                    }`}
+                  >
+                    <Volume2 className="w-8 h-8 md:w-10 md:h-10" />
+                  </motion.button>
+                )}
+              </h2>
+              
+              {showHint && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  className="mt-2 md:mt-4 p-4 md:p-6 bg-amber-100 border-4 border-amber-200 border-b-[8px] rounded-[2rem] flex items-start gap-3 md:gap-4 w-full shadow-sm shrink-0 text-left"
                 >
-                  <Volume2 className="w-8 h-8 md:w-10 md:h-10" />
-                </motion.button>
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-2xl flex items-center justify-center shrink-0 border-2 border-amber-200">
+                    <span className="text-xl md:text-2xl font-black">👨‍🏫</span>
+                  </div>
+                  <div className="pt-1">
+                    <h3 className="font-black text-amber-900 mb-1 text-base md:text-lg">
+                      Petunjuk A Iki
+                    </h3>
+                    <p className="text-amber-800 font-medium leading-relaxed text-sm md:text-base break-words">
+                      Oops.. bukan yang itu. Coba perhatikan: <strong className="text-amber-950 font-black bg-amber-200/50 px-2 rounded break-words whitespace-pre-line inline-block mt-1">"{currentQ.hint}"</strong>
+                    </p>
+                  </div>
+                </motion.div>
               )}
-            </h2>
+            </div>
 
-            <div className="flex flex-col w-full max-w-2xl shrink-0 gap-6">
+            {/* Right side: Options Grid */}
+            <div className="flex flex-col w-full lg:w-3/5 max-w-2xl shrink-0 gap-6">
               {currentQ.type === 'sequence' && (
                 <div className="flex flex-row-reverse justify-center gap-3 md:gap-4 mb-2">
                   {Array.from({ length: currentQ.parts?.length || currentQ.correctAnswer.split(' ').length }).map((_, i) => {
@@ -326,26 +351,6 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
                 })}
               </div>
             </div>
-
-            {showHint && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="mt-6 md:mt-8 p-4 md:p-6 bg-amber-100 border-4 border-amber-200 border-b-[8px] rounded-[2rem] flex items-start gap-3 md:gap-4 w-full max-w-2xl shadow-sm shrink-0 text-left"
-              >
-                <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-2xl flex items-center justify-center shrink-0 border-2 border-amber-200">
-                  <span className="text-xl md:text-2xl font-black">👨‍🏫</span>
-                </div>
-                <div className="pt-1">
-                  <h3 className="font-black text-amber-900 mb-1 text-base md:text-lg">
-                    Petunjuk A Iki
-                  </h3>
-                  <p className="text-amber-800 font-medium leading-relaxed text-sm md:text-base break-words">
-                    Oops.. bukan yang itu. Coba perhatikan: <strong className="text-amber-950 font-black bg-amber-200/50 px-2 rounded break-words whitespace-pre-line inline-block mt-1">"{currentQ.hint}"</strong>
-                  </p>
-                </div>
-              </motion.div>
-            )}
           </motion.div>
         </AnimatePresence>
         </div>

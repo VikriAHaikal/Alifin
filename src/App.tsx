@@ -52,7 +52,13 @@ export default function App() {
   const [lastScore, setLastScore] = useState(0);
   const [isPlayingBGM, setIsPlayingBGM] = useState(false);
   const [userMutedBGM, setUserMutedBGM] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM && hasInteracted;
+  const shouldPlayRef = useRef(shouldPlay);
+  shouldPlayRef.current = shouldPlay;
+
   const [isUstadzOpen, setIsUstadzOpen] = useState(false);
   const [selectedVolume, setSelectedVolume] = useState<number | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -96,10 +102,36 @@ export default function App() {
     });
     audioRef.current = bgm;
     
+    let unlocked = false;
+    const unlock = () => {
+      if (unlocked) return;
+      unlocked = true;
+      bgm.volume = 0;
+      const p = bgm.play();
+      if (p !== undefined) {
+         p.then(() => {
+            if (!shouldPlayRef.current) {
+               audioRef.current?.pause();
+            } else {
+               setIsPlayingBGM(true); // Manually trigger since it was started
+            }
+            setHasInteracted(true);
+         }).catch(() => {
+            unlocked = false; // try again on next click
+         });
+      }
+      window.removeEventListener('click', unlock, true);
+      window.removeEventListener('touchstart', unlock, true);
+    };
+    window.addEventListener('click', unlock, true);
+    window.addEventListener('touchstart', unlock, true);
+
     return () => {
       bgm.pause();
       bgm.src = '';
       bgm.removeEventListener('error', () => {});
+      window.removeEventListener('click', unlock, true);
+      window.removeEventListener('touchstart', unlock, true);
     };
   }, []);
 
@@ -107,25 +139,57 @@ export default function App() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM;
+    let fadeInterval: NodeJS.Timeout;
+
+    const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM && hasInteracted;
 
     if (!shouldPlay && isPlayingBGM) {
-      audio.pause();
-      setIsPlayingBGM(false);
-    } else if (shouldPlay && !isPlayingBGM) {
-      audio.volume = 0.4;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          setIsPlayingBGM(true);
-        }).catch(err => {
-          console.log("Auto-play prevented", err);
+      fadeInterval = setInterval(() => {
+        if (audio.volume > 0.02) {
+          audio.volume = Math.max(0, audio.volume - 0.02);
+        } else {
+          audio.volume = 0;
+          audio.pause();
           setIsPlayingBGM(false);
-          // If auto-play is prevented, we just stay paused. User can use the toggle button.
-        });
+          clearInterval(fadeInterval);
+        }
+      }, 50);
+    } else if (shouldPlay && (!isPlayingBGM || audio.volume < 0.38)) {
+      if (audio.paused) {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            setIsPlayingBGM(true);
+            fadeInterval = setInterval(() => {
+              if (audio.volume < 0.38) {
+                audio.volume = Math.min(0.4, audio.volume + 0.02);
+              } else {
+                audio.volume = 0.4;
+                clearInterval(fadeInterval);
+              }
+            }, 50);
+          }).catch(err => {
+            console.log("Auto-play prevented", err);
+            setIsPlayingBGM(false);
+          });
+        }
+      } else {
+         setIsPlayingBGM(true);
+         fadeInterval = setInterval(() => {
+            if (audio.volume < 0.38) {
+              audio.volume = Math.min(0.4, audio.volume + 0.02);
+            } else {
+              audio.volume = 0.4;
+              clearInterval(fadeInterval);
+            }
+         }, 50);
       }
     }
-  }, [view, isPlayingBGM, userMutedBGM]);
+
+    return () => {
+      if (fadeInterval) clearInterval(fadeInterval);
+    };
+  }, [view, isPlayingBGM, userMutedBGM, hasInteracted]);
 
 
   const handleOnboardingComplete = (name: string, selectedGender: 'ikhwan' | 'akhwat') => {
