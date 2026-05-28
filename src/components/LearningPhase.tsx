@@ -13,6 +13,8 @@ interface Props {
   onBack: () => void;
 }
 
+import { iqra1AudioMap, getAudioUrlsForParts } from '../lib/audioMap';
+
 export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterIds = [], onComplete, onBack }: Props) {
   const [isNiatDone, setIsNiatDone] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -57,27 +59,28 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
       window.speechSynthesis.cancel();
     }
 
-    // We add an Arabic comma to let TTS draw out the sound naturally
-    const textToPlay = letter.arTTS + ' ،';
-    const url = `https://translate.googleapis.com/translate_tts?client=tw-ob&ie=UTF-8&tl=ar&q=${encodeURIComponent(textToPlay)}`;
-    
-    const audio = new Audio(url);
-    audioRef.current = audio;
-    audio.playbackRate = 0.85;
+    const mappedAudioFile = iqra1AudioMap[letter.id];
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Fallback
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const msg = new SpeechSynthesisUtterance();
-          msg.lang = 'ar-SA';
-          msg.text = letter.arTTS;
-          msg.rate = 0.8;
-          window.speechSynthesis.speak(msg);
-        }
-      });
+    let urls: string[] = [];
+    if (mappedAudioFile) {
+      urls = [`/audio/hijaiyah/${mappedAudioFile}`];
+    } else if ((letter as any).parts) {
+      urls = getAudioUrlsForParts((letter as any).parts);
+    }
+
+    if (urls.length > 0) {
+      const playNext = (index: number) => {
+        if (index >= urls.length) return;
+        const audio = new Audio(urls[index]);
+        audioRef.current = audio;
+        audio.onended = () => playNext(index + 1);
+        const onPlaybackError = () => {
+          console.warn('Audio mp3 playback failed', urls[index]);
+        };
+        audio.onerror = onPlaybackError;
+        audio.play().catch(onPlaybackError);
+      };
+      playNext(0);
     }
 
     if (!learnedIds.has(letter.id)) {

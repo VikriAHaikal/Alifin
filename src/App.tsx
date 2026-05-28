@@ -52,7 +52,6 @@ export default function App() {
   const [lastScore, setLastScore] = useState(0);
   const [isPlayingBGM, setIsPlayingBGM] = useState(false);
   const [userMutedBGM, setUserMutedBGM] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isUstadzOpen, setIsUstadzOpen] = useState(false);
   const [selectedVolume, setSelectedVolume] = useState<number | null>(null);
@@ -87,75 +86,46 @@ export default function App() {
   }, [userName, gender, points, maxUnlockedLevel, levelScores, levelWrongLetters]);
 
   useEffect(() => {
-    // Initialize background music
-    // Use the uploaded Islamic instrumental background track
+    // Initialize background music only once dynamically
     const bgm = new Audio('/lagu-tema.mp3');
     bgm.loop = true;
-    bgm.volume = 0.4; // Soft volume so it doesn't overpower the Hijaiyah TTS
-    
+    bgm.volume = 0; // default hidden
+    bgm.preload = 'auto';
     bgm.addEventListener('error', (e) => {
-      console.error('Error loading background music:', e);
+      console.warn('Background music load warning:', (e.target as HTMLAudioElement)?.error || e);
     });
-    
     audioRef.current = bgm;
+    
+    return () => {
+      bgm.pause();
+      bgm.src = '';
+      bgm.removeEventListener('error', () => {});
+    };
+  }, []);
 
-    // Try to auto-play (might be blocked by browser)
-    if (gender !== null && view !== 'LANDING' && view !== 'ONBOARDING') {
-      const playPromise = bgm.play();
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM;
+
+    if (!shouldPlay && isPlayingBGM) {
+      audio.pause();
+      setIsPlayingBGM(false);
+    } else if (shouldPlay && !isPlayingBGM) {
+      audio.volume = 0.4;
+      const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           setIsPlayingBGM(true);
-        }).catch(() => {
+        }).catch(err => {
+          console.log("Auto-play prevented", err);
           setIsPlayingBGM(false);
+          // If auto-play is prevented, we just stay paused. User can use the toggle button.
         });
       }
-    } else {
-      bgm.pause();
-      setIsPlayingBGM(false);
     }
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-      }
-    };
-  }, [gender]);
-
-  useEffect(() => {
-    // Handle first user interaction to unlock audio
-    const handleFirstInteraction = () => {
-      if (!hasInteracted && audioRef.current && !isPlayingBGM && !userMutedBGM && view !== 'ONBOARDING' && view !== 'LANDING') {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            setIsPlayingBGM(true);
-            setHasInteracted(true);
-          }).catch(console.log);
-        }
-      }
-    };
-
-    window.addEventListener('click', handleFirstInteraction, { once: true });
-    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    }
-  }, [hasInteracted, isPlayingBGM, userMutedBGM, view]);
-
-  useEffect(() => {
-    if ((view === 'LANDING' || view === 'ONBOARDING') && isPlayingBGM && audioRef.current) {
-      audioRef.current.pause();
-      setIsPlayingBGM(false);
-    } else if (view !== 'LANDING' && view !== 'ONBOARDING' && gender !== null && hasInteracted && !isPlayingBGM && !userMutedBGM && audioRef.current) {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => setIsPlayingBGM(true)).catch(console.log);
-        }
-    }
-  }, [view, isPlayingBGM, gender, hasInteracted, userMutedBGM]);
+  }, [view, isPlayingBGM, userMutedBGM]);
 
 
   const handleOnboardingComplete = (name: string, selectedGender: 'ikhwan' | 'akhwat') => {
@@ -167,19 +137,6 @@ export default function App() {
     if (user) {
       updateProfile({ userName: name, gender: selectedGender }).catch(console.error);
     }
-
-    // Play music after first interaction
-    if (audioRef.current && !isPlayingBGM) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          setIsPlayingBGM(true);
-        }).catch(err => {
-          console.log('Audio playback prevented:', err);
-          setIsPlayingBGM(false);
-        });
-      }
-    }
   };
 
   const toggleBGM = () => {
@@ -190,6 +147,7 @@ export default function App() {
       setIsPlayingBGM(false);
       setUserMutedBGM(true);
     } else {
+      audioRef.current.volume = 0.4;
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
@@ -412,7 +370,11 @@ export default function App() {
           
           {view === 'QUIZ' && (
             <motion.div key="quiz" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="flex-1 w-full flex flex-col">
-              <QuizPhase level={currentLevel} onFinish={handleFinishQuiz} />
+              <QuizPhase 
+                level={currentLevel} 
+                onFinish={handleFinishQuiz} 
+                onBack={() => { playSound('back'); setView('LEARNING'); }}
+              />
             </motion.div>
           )}
           

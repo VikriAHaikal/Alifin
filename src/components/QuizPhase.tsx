@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, AlertTriangle, Volume2 } from 'lucide-react';
-import { generateQuiz, QuizQuestion, getQuestionCount } from '../data/hijaiyah';
+import { Clock, AlertTriangle, Volume2, ArrowLeft } from 'lucide-react';
+import { generateQuiz, QuizQuestion, getQuestionCount, IQRA_VOLUMES, STAGES_PER_VOLUME } from '../data/hijaiyah';
 import { playSound } from '../lib/sounds';
-
-import { STAGES_PER_VOLUME } from '../data/hijaiyah';
+import { iqra1AudioMap, getAudioUrlsForParts } from '../lib/audioMap';
 
 interface Props {
   level: number;
   onFinish: (score: number, wrongLetterIds: number[]) => void;
+  onBack: () => void;
 }
 
-export function QuizPhase({ level, onFinish }: Props) {
+export function QuizPhase({ level, onFinish, onBack }: Props) {
   const isExam = level % STAGES_PER_VOLUME === 0;
   const questionCount = getQuestionCount(level);
   const [questions] = useState<QuizQuestion[]>(() => generateQuiz(level, questionCount));
@@ -25,7 +25,10 @@ export function QuizPhase({ level, onFinish }: Props) {
   const [showHint, setShowHint] = useState(false);
   const [selectedWrong, setSelectedWrong] = useState<string | null>(null);
   
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  
   const [sequencePicks, setSequencePicks] = useState<string[]>([]);
+  const [sequencePicksIdx, setSequencePicksIdx] = useState<number[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasPlayedIntro, setHasPlayedIntro] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -34,7 +37,8 @@ export function QuizPhase({ level, onFinish }: Props) {
     // Reset play state and custom sequence state for new question
     setHasPlayedIntro(false);
     setSequencePicks([]);
-  }, [currentIndex, currentQ?.type]);
+    setSequencePicksIdx([]);
+  }, [currentIndex]);
 
   const playAudio = () => {
     if (!currentQ) return;
@@ -50,30 +54,37 @@ export function QuizPhase({ level, onFinish }: Props) {
     
     if (currentQ.type === 'audio' || currentQ.type === 'sequence') {
       setIsPlaying(true);
-      const textToPlay = currentQ.audioText + ' ،';
-      const url = `https://translate.googleapis.com/translate_tts?client=tw-ob&ie=UTF-8&tl=ar&q=${encodeURIComponent(textToPlay)}`;
       
-      const audio = new Audio(url);
-      audioRef.current = audio;
-      audio.playbackRate = 0.85;
-      audio.onended = () => setIsPlaying(false);
-      audio.onerror = () => setIsPlaying(false);
-      
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          if ('speechSynthesis' in window) {
-            const msg = new SpeechSynthesisUtterance();
-            msg.lang = 'ar-SA';
-            msg.text = currentQ.audioText;
-            msg.rate = 0.8;
-            msg.onend = () => setIsPlaying(false);
-            msg.onerror = () => setIsPlaying(false);
-            window.speechSynthesis.speak(msg);
-          } else {
+      const currentVolume = Math.ceil(Math.min(level, IQRA_VOLUMES * STAGES_PER_VOLUME) / STAGES_PER_VOLUME);
+
+      const mappedAudioFile = iqra1AudioMap[currentQ.letterId];
+      let urls: string[] = [];
+
+      if (mappedAudioFile) {
+        urls = [`/audio/hijaiyah/${mappedAudioFile}`];
+      } else if (currentQ.parts) {
+        urls = getAudioUrlsForParts(currentQ.parts);
+      }
+
+      if (urls.length > 0) {
+        const playNext = (index: number) => {
+          if (index >= urls.length) {
             setIsPlaying(false);
+            return;
           }
-        });
+          const audio = new Audio(urls[index]);
+          audioRef.current = audio;
+          audio.onended = () => playNext(index + 1);
+          const onPlaybackError = () => {
+            console.warn('Audio mp3 playback failed', urls[index]);
+            setIsPlaying(false);
+          };
+          audio.onerror = onPlaybackError;
+          audio.play().catch(onPlaybackError);
+        };
+        playNext(0);
+      } else {
+        setIsPlaying(false);
       }
     }
   };
@@ -83,8 +94,9 @@ export function QuizPhase({ level, onFinish }: Props) {
       if (currentQ.type === 'sequence') {
         evaluateAnswer(false, sequencePicks.join(' '));
         setSequencePicks([]); // Reset sequence picks on timeout
+        setSequencePicksIdx([]);
       } else {
-        handleAnswer(''); // Auto submit wrong if time runs out
+        handleAnswer('', -1); // Auto submit wrong if time runs out
       }
       return;
     }
@@ -95,11 +107,13 @@ export function QuizPhase({ level, onFinish }: Props) {
     return () => clearInterval(timer);
   }, [timeLeft, currentIndex, showHint]);
 
-  const handleAnswer = (answer: string) => {
+  const handleAnswer = (answer: string, optIndex: number = -1) => {
     if (currentQ.type === 'sequence') {
       const parts = currentQ.parts || currentQ.correctAnswer.split(' ');
       const newPicks = [...sequencePicks, answer];
+      const newPicksIdx = [...sequencePicksIdx, optIndex];
       setSequencePicks(newPicks);
+      setSequencePicksIdx(newPicksIdx);
       
       // If sequence is complete
       if (newPicks.length === parts.length) {
@@ -108,7 +122,10 @@ export function QuizPhase({ level, onFinish }: Props) {
         } else {
           evaluateAnswer(false, newPicks.join(' '));
           // Reset picks after showing the hint briefly
-          setTimeout(() => setSequencePicks([]), 2000);
+          setTimeout(() => {
+            setSequencePicks([]);
+            setSequencePicksIdx([]);
+          }, 2000);
         }
       }
       return;
@@ -125,7 +142,8 @@ export function QuizPhase({ level, onFinish }: Props) {
     if (isCorrect) {
       playSound('correct');
       // Only give point if they didn't need a hint for this question
-      if (!showHint && selectedWrong === null) {
+      const earnedPoint = !showHint && selectedWrong === null;
+      if (earnedPoint) {
         setScore(s => s + 1);
       }
       
@@ -135,10 +153,9 @@ export function QuizPhase({ level, onFinish }: Props) {
       if (currentIndex < questions.length - 1) {
         setCurrentIndex(i => i + 1);
         setTimeLeft(30);
-        setSequencePicks([]);
       } else {
         // Finished
-        onFinish(score + (!showHint && selectedWrong === null ? 1 : 0), wrongLetterIds);
+        onFinish(score + (earnedPoint ? 1 : 0), wrongLetterIds);
       }
     } else {
       playSound('wrong');
@@ -153,14 +170,55 @@ export function QuizPhase({ level, onFinish }: Props) {
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden text-slate-800 relative z-10 w-full">
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }} 
+            className="bg-white rounded-[2rem] p-6 max-w-sm w-full shadow-xl border-4 border-slate-200 flex flex-col items-center text-center"
+          >
+            <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-4 border-4 border-red-200">
+              <AlertTriangle className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">Kembali Belajar?</h3>
+            <p className="text-slate-500 mb-6 font-medium">Progres kuis kamu saat ini akan hilang dan kamu harus mengulang dari awal materi ini.</p>
+            <div className="flex gap-3 w-full">
+              <button 
+                onClick={() => setShowExitConfirm(false)} 
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-2xl transition-colors border-b-4 border-slate-300 active:translate-y-1 active:border-b-0"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={() => {
+                  setShowExitConfirm(false);
+                  onBack();
+                }} 
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-2xl transition-colors border-b-4 border-red-700 active:translate-y-1 active:border-b-0"
+              >
+                Ya, Keluar
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Header Info */}
       <div className="p-4 md:p-6 flex justify-between items-center bg-white border-b-4 border-slate-200 z-10 shrink-0">
-        <div className="flex flex-col">
-          <div className="w-48 bg-slate-200 h-3 rounded-full overflow-hidden mt-1 mb-2">
-             <div className="bg-emerald-500 h-full rounded-full transition-all" style={{ width: `${((currentIndex) / questions.length) * 100}%` }}></div>
-          </div>
-          <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">
-            Soal {currentIndex + 1} / {questions.length}
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setShowExitConfirm(true)} 
+            className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors active:scale-95"
+          >
+            <ArrowLeft className="w-6 h-6 md:w-7 md:h-7" />
+          </button>
+          <div className="flex flex-col">
+            <div className="w-32 md:w-48 bg-slate-200 h-3 rounded-full overflow-hidden mt-1 mb-2">
+               <div className="bg-emerald-500 h-full rounded-full transition-all" style={{ width: `${((currentIndex) / questions.length) * 100}%` }}></div>
+            </div>
+            <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">
+              Soal {currentIndex + 1} / {questions.length}
+            </div>
           </div>
         </div>
         
@@ -204,8 +262,9 @@ export function QuizPhase({ level, onFinish }: Props) {
 
             <div className="flex flex-col w-full max-w-2xl shrink-0 gap-6">
               {currentQ.type === 'sequence' && (
-                <div className="flex justify-center gap-3 md:gap-4 mb-2">
-                  {Array.from({ length: currentQ.parts?.length || currentQ.correctAnswer.split(' ').length }).map((_, i) => (
+                <div className="flex flex-row-reverse justify-center gap-3 md:gap-4 mb-2">
+                  {Array.from({ length: currentQ.parts?.length || currentQ.correctAnswer.split(' ').length }).map((_, i) => {
+                    return (
                     <motion.button 
                       key={i} 
                       whileTap={sequencePicks[i] ? { scale: 0.95 } : {}}
@@ -213,6 +272,9 @@ export function QuizPhase({ level, onFinish }: Props) {
                         if (sequencePicks[i]) {
                           const newPicks = [...sequencePicks];
                           newPicks.splice(i, 1); // remove clicked element
+                          const newPicksIdx = [...sequencePicksIdx];
+                          newPicksIdx.splice(i, 1);
+                          setSequencePicksIdx(newPicksIdx);
                           setSequencePicks(newPicks);
                           setShowHint(false); // remove hint if they retry
                         }
@@ -225,7 +287,7 @@ export function QuizPhase({ level, onFinish }: Props) {
                     >
                       {sequencePicks[i] || ''}
                     </motion.button>
-                  ))}
+                  )})}
                 </div>
               )}
 
@@ -235,12 +297,7 @@ export function QuizPhase({ level, onFinish }: Props) {
                   let isPicked = false;
                   
                   if (currentQ.type === 'sequence') {
-                    // Count how many times this option is picked
-                    const pickedCount = sequencePicks.filter(p => p === opt).length;
-                    // Count how many times this option is available in the options
-                    const optionCount = currentQ.options.filter(o => o === opt).length;
-                    isPicked = pickedCount >= optionCount; // disable if they picked all instances of this letter
-                    
+                    isPicked = sequencePicksIdx.includes(i);
                     // For sequence, the hint applies to the full string, not single option
                     // So we don't highlight single options red in sequence mode unless we change the logic
                     isSelectedAndWrong = false; 
@@ -251,7 +308,7 @@ export function QuizPhase({ level, onFinish }: Props) {
                       key={i}
                       whileHover={!isSelectedAndWrong && !isPicked ? { y: -4 } : {}}
                       whileTap={!isSelectedAndWrong && !isPicked ? { y: 4 } : {}}
-                      onClick={() => !isPicked && handleAnswer(opt)}
+                      onClick={() => !isPicked && handleAnswer(opt, i)}
                       disabled={isPicked}
                       className={`bg-white rounded-3xl p-2 transition-all flex flex-col items-center justify-center group ${currentQ.options.length > 4 ? 'border-b-[6px]' : 'border-b-[10px] active:border-b-4 active:mt-[6px]'} border-4 h-[120px] sm:h-[140px] md:h-[180px]
                         ${isPicked 
@@ -281,7 +338,7 @@ export function QuizPhase({ level, onFinish }: Props) {
                 </div>
                 <div className="pt-1">
                   <h3 className="font-black text-amber-900 mb-1 text-base md:text-lg">
-                    Petunjuk Ustadz
+                    Petunjuk A Iki
                   </h3>
                   <p className="text-amber-800 font-medium leading-relaxed text-sm md:text-base break-words">
                     Oops.. bukan yang itu. Coba perhatikan: <strong className="text-amber-950 font-black bg-amber-200/50 px-2 rounded break-words whitespace-pre-line inline-block mt-1">"{currentQ.hint}"</strong>

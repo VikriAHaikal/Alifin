@@ -1,6 +1,6 @@
 {
   "name": "Alifin",
-  "description": "Gamified Islamic education app to learn Hijaiyah letters with interactive maps, flashcards, quizzes, and live proctoring.",
+  "description": "Aplikasi edukasi interaktif untuk belajar Iqra dengan menyenangkan.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

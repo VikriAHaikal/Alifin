@@ -1514,6 +1514,7 @@ export const generateQuiz = (
   const currentLevelLetters = getLettersForLevel(level);
   const allAvailableLetters = getAllLettersUpToLevel(level);
   const questions: QuizQuestion[] = [];
+  const usedTargetIds = new Set<number>();
 
   for (let i = 0; i < count; i++) {
     const volume = Math.ceil(Math.min(level, TOTAL_LEVELS) / STAGES_PER_VOLUME);
@@ -1529,8 +1530,16 @@ export const generateQuiz = (
     }
 
     if (targetPool.length === 0) targetPool = currentLevelLetters;
+    
+    let availableInPool = targetPool.filter(l => !usedTargetIds.has(l.id));
+    if (availableInPool.length === 0) {
+      // If we exhausted all targets in the pool, just reset or pick from full pool
+      availableInPool = targetPool;
+    }
 
-    const target = targetPool[Math.floor(Math.random() * targetPool.length)];
+    const target = availableInPool[Math.floor(Math.random() * availableInPool.length)];
+    usedTargetIds.add(target.id);
+    
     const isTargetCombo = target.id >= 1000;
 
     // Determine the type: if combo, 50% chance to be sequence
@@ -1543,17 +1552,26 @@ export const generateQuiz = (
       const singleLetterPool = allAvailableLetters.filter(
         (l) => l.id < 1000 && !parts.includes(l.char),
       );
+      
+      // Ensure total options is always 4
+      const numDecoysNeeded = Math.max(0, 4 - parts.length);
       const decoys = singleLetterPool
         .sort(() => 0.5 - Math.random())
-        .slice(0, 4)
+        .slice(0, Math.max(1, numDecoysNeeded)) // Always have at least 1 decoy for safety, though math max 0 is ideal if parts >=4. Let's just use numDecoysNeeded
         .map((l) => l.char);
-      const options = [...parts, ...decoys].sort(() => 0.5 - Math.random());
+        
+      // Ensure exactly 4 options by taking only what's needed if parts > 4 is ever possible (though unlikely)
+      const baseOptions = [...parts];
+      const allPossibleOptions = [...baseOptions, ...decoys];
+      const max4Options = allPossibleOptions.slice(0, Math.max(4, parts.length)); 
+      
+      const options = max4Options.sort(() => 0.5 - Math.random());
 
       questions.push({
         id: `q_${i}_${target.id}_seq`,
         letterId: target.id,
         type: "sequence",
-        question: `Dengarkan suara Ustadz. Susun huruf berikut secara berurutan: ${target.name.split(" ").join(" - ")}`,
+        question: `Dengarkan suara A Iki. Susun hurufnya secara berurutan.`,
         correctAnswer: parts.join(""), // store sequence exactly as joined or unjoined? Answer expects joined string for char
         parts: parts,
         options,
@@ -1661,11 +1679,11 @@ export const generateQuiz = (
     }
 
     // If we STILL don't have enough wrong options (e.g., Level 1), pad with other random letters
-    if (wrongOptions.length < 5) {
+    if (wrongOptions.length < 3) {
       // Just create synthetic wrong options by shuffling target char if it's combo, or getting random hijaiyah if single
       if (isTargetCombo) {
         const parts = (target as any).parts || target.char.split(" ");
-        for (let pad = 0; pad < 5 - wrongOptions.length; pad++) {
+        for (let pad = 0; pad < 3 - wrongOptions.length; pad++) {
           wrongOptions.push({
             ...target,
             char: [...parts]
@@ -1681,12 +1699,12 @@ export const generateQuiz = (
         wrongOptions.push(
           ...padding
             .sort(() => 0.5 - Math.random())
-            .slice(0, 5 - wrongOptions.length),
+            .slice(0, 3 - wrongOptions.length),
         );
       }
     }
 
-    wrongOptions = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 5);
+    wrongOptions = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 3);
 
     const options = [target.char, ...wrongOptions.map((l) => l.char)].sort(
       () => 0.5 - Math.random(),
@@ -1697,7 +1715,7 @@ export const generateQuiz = (
       letterId: target.id,
       type: isAudio ? "audio" : "visual",
       question: isAudio
-        ? `Dengarkan suara Ustadz. Huruf apakah ini?`
+        ? `Dengarkan suara A Iki. Huruf apakah ini?`
         : isTargetCombo && volume >= 2 && Math.random() > 0.4
           ? `Bagaimana bentuk sambung dari ${(target as any).parts.join(" + ")} ?`
           : `Huruf apakah ini: "${target.name}"?`,
@@ -1706,6 +1724,7 @@ export const generateQuiz = (
       hint: target.hint,
       audioText: target.arTTS,
       idTTS: target.idTTS,
+      parts: (target as any).parts,
     });
   }
 
