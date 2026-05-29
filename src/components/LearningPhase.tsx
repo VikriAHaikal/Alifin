@@ -59,13 +59,22 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
       window.speechSynthesis.cancel();
     }
 
-    const mappedAudioFile = iqra1AudioMap[letter.id];
-
     let urls: string[] = [];
-    if (mappedAudioFile) {
-      urls = [`/audio/hijaiyah/${mappedAudioFile}`];
-    } else if ((letter as any).parts) {
-      urls = getAudioUrlsForParts((letter as any).parts);
+    const currentVolume = Math.ceil(Math.min(level, 42) / 7);
+    const currentStageInVolume = ((level - 1) % 7) + 1;
+
+    if (currentVolume >= 2) {
+      // For Iqro 2 and above, use the combined recorded audio provided by user
+      const fileName = (letter as any).name || (letter as any).idTTS; // e.g., "Bata", "Taba"
+      urls = [`/audio/iqra-${currentVolume}/tahap-${currentStageInVolume}/${fileName}.mp3`];
+    } else {
+      // Iqra 1 fallback
+      const mappedAudioFile = iqra1AudioMap[letter.id];
+      if (mappedAudioFile) {
+        urls = [`/audio/iqra-1/hijaiyah/${mappedAudioFile}`];
+      } else if ((letter as any).parts) {
+        urls = getAudioUrlsForParts((letter as any).parts);
+      }
     }
 
     if (urls.length > 0) {
@@ -157,7 +166,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
   }
 
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col relative">
+    <div className="h-full w-full flex flex-col relative overflow-hidden">
       <div className="bg-emerald-500 border-b-4 border-emerald-700 text-white p-4 sm:p-6 shrink-0 z-20 relative w-full pt-10 sm:pt-6">
         <button 
           onClick={handleBack}

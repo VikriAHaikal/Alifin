@@ -57,13 +57,20 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
       
       const currentVolume = Math.ceil(Math.min(level, IQRA_VOLUMES * STAGES_PER_VOLUME) / STAGES_PER_VOLUME);
 
-      const mappedAudioFile = iqra1AudioMap[currentQ.letterId];
       let urls: string[] = [];
+      const currentStageInVolume = ((level - 1) % STAGES_PER_VOLUME) + 1;
 
-      if (mappedAudioFile) {
-        urls = [`/audio/hijaiyah/${mappedAudioFile}`];
-      } else if (currentQ.parts) {
-        urls = getAudioUrlsForParts(currentQ.parts);
+      if (currentVolume >= 2) {
+        // For Iqro 2 and above, use the combined recorded audio provided by user
+        let fileName = currentQ.idTTS; // Set this accurately in generator
+        urls = [`/audio/iqra-${currentVolume}/tahap-${currentStageInVolume}/${fileName}.mp3`];
+      } else {
+        const mappedAudioFile = iqra1AudioMap[currentQ.letterId];
+        if (mappedAudioFile) {
+          urls = [`/audio/iqra-1/hijaiyah/${mappedAudioFile}`];
+        } else if (currentQ.parts) {
+          urls = getAudioUrlsForParts(currentQ.parts);
+        }
       }
 
       if (urls.length > 0) {
@@ -169,7 +176,7 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
   };
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden text-slate-800 relative z-10 w-full">
+    <div className="h-full flex flex-col overflow-hidden text-slate-800 relative z-10 w-full">
       {showExitConfirm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <motion.div 

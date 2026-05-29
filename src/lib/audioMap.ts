@@ -37,7 +37,7 @@ export const getAudioUrlsForParts = (parts: string[]): string[] => {
   for (const part of parts) {
     const letter = hijaiyahLetters.find(l => l.char === part);
     if (letter && iqra1AudioMap[letter.id]) {
-      urls.push(`/audio/hijaiyah/${iqra1AudioMap[letter.id]}`);
+      urls.push(`/audio/iqra-1/hijaiyah/${iqra1AudioMap[letter.id]}`);
     }
   }
   return urls;
