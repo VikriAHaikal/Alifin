@@ -15,6 +15,21 @@ interface Props {
 
 import { iqra1AudioMap, getAudioUrlsForParts } from '../lib/audioMap';
 
+const getFontSize = (length: number) => {
+  if (length > 20) return 'text-[1.75rem] sm:text-[2.5rem] md:text-[3rem] lg:text-[4rem]';
+  if (length > 15) return 'text-[2rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4.5rem]';
+  if (length > 10) return 'text-[2.5rem] sm:text-[3.5rem] md:text-[4rem] lg:text-[5rem]';
+  if (length > 6) return 'text-[3rem] sm:text-[4rem] md:text-[4.5rem] lg:text-[6rem]';
+  if (length > 3) return 'text-[3.5rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[7rem]';
+  return 'text-[5rem] sm:text-[6rem] md:text-[7rem] lg:text-[8rem]';
+};
+
+const getNameFontSize = (length: number) => {
+  if (length > 20) return 'text-xl sm:text-2xl md:text-3xl';
+  if (length > 15) return 'text-xl sm:text-2xl md:text-3xl';
+  return 'text-2xl sm:text-3xl md:text-4xl';
+};
+
 export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterIds = [], onComplete, onBack }: Props) {
   const [isNiatDone, setIsNiatDone] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -166,7 +181,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
   }
 
   return (
-    <div className="h-full w-full flex flex-col relative overflow-hidden">
+    <div className="flex-1 w-full flex flex-col relative overflow-hidden">
       <div className="bg-emerald-500 border-b-4 border-emerald-700 text-white p-4 sm:p-6 shrink-0 z-20 relative w-full pt-10 sm:pt-6">
         <button 
           onClick={handleBack}
@@ -236,13 +251,13 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
             )}
             
             <div className="flex-1 w-full flex items-center justify-center relative mt-4 sm:mt-6 px-4">
-               <span className={`font-arabic ${currentLetter.char.length > 3 ? 'text-[4rem] sm:text-[5rem] md:text-[6rem]' : 'text-[5rem] sm:text-[6rem] md:text-[8rem]'} font-bold leading-normal text-center drop-shadow-sm flex items-center justify-center flex-1`}>
+               <span className={`font-arabic ${getFontSize(currentLetter.char.length)} font-bold leading-normal text-center drop-shadow-sm flex items-center justify-center flex-1`}>
                  {currentLetter.char}
                </span>
             </div>
             
             <div className="flex flex-col items-center w-full pb-2 md:pb-4 shrink-0">
-              <span className="font-black text-2xl sm:text-3xl md:text-4xl tracking-wide text-slate-800 mb-2 capitalize">
+              <span className={`font-black ${getNameFontSize(currentLetter.name.length)} tracking-wide text-slate-800 mb-2 capitalize text-center px-4`}>
                 {currentLetter.name}
               </span>
               {currentLetter.hint && (
@@ -285,7 +300,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
         </div>
       </div>
 
-      <div className="bg-white border-t-2 border-slate-200 p-4 md:p-6 shrink-0 z-20 flex justify-center w-full">
+      <div className="bg-white border-t-2 border-slate-200 p-4 pb-6 sm:pb-6 md:p-6 md:pb-8 shrink-0 z-20 flex justify-center w-full shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
         <button
           onClick={handleComplete}
           disabled={learnedCount < 1}

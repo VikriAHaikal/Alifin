@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Sparkles, BookOpen, Clock, ShieldCheck, Star, ChevronDown, Check, ArrowRight } from 'lucide-react';
+import { Play, Sparkles, BookOpen, Clock, ShieldCheck, Star, ChevronDown, Check, Menu, X, ArrowUp } from 'lucide-react';
 import { playSound } from '../lib/sounds';
 import { Logo } from './Logo';
 
 export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin?: () => Promise<void> }) {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleStart = () => {
     playSound('click');
@@ -65,42 +88,82 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
 
         {/* Navigation */}
         <nav className="absolute top-0 inset-x-0 z-50">
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <Logo />
-            {/* Navigation Menus */}
+          <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+            <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="cursor-pointer">
+              <Logo />
+            </a>
+            
+            {/* Desktop Navigation Menus */}
             <div className="hidden md:flex items-center gap-8 text-sm font-black text-slate-600">
-              <a href="#cara-kerja" className="hover:text-emerald-600 transition-colors">Cara Kerja</a>
-              <a href="#fitur" className="hover:text-emerald-600 transition-colors">Fitur</a>
-              <a href="#testimoni" className="hover:text-emerald-600 transition-colors">Testimoni</a>
-              <a href="#faq" className="hover:text-emerald-600 transition-colors">FAQ</a>
+              <a href="#cara-kerja" onClick={(e) => handleNavClick(e, 'cara-kerja')} className="hover:text-emerald-600 transition-colors">Cara Kerja</a>
+              <a href="#fitur" onClick={(e) => handleNavClick(e, 'fitur')} className="hover:text-emerald-600 transition-colors">Fitur</a>
+              <a href="#testimoni" onClick={(e) => handleNavClick(e, 'testimoni')} className="hover:text-emerald-600 transition-colors">Testimoni</a>
+              <a href="#faq" onClick={(e) => handleNavClick(e, 'faq')} className="hover:text-emerald-600 transition-colors">FAQ</a>
             </div>
-            {/* Login Button */}
-            <div className="hidden md:block">
+            
+            <div className="flex items-center gap-3">
+              {/* Login Button Desktop */}
               <button 
                 onClick={handleLoginClick}
                 disabled={isLoggingIn}
-                className="bg-emerald-500 border-emerald-700 border-2 border-b-[4px] active:border-b-[2px] active:translate-y-[2px] text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-400 transition-all disabled:opacity-50 flex items-center gap-2"
+                className="hidden md:flex bg-emerald-500 border-emerald-700 border-2 border-b-[4px] active:border-b-[2px] active:translate-y-[2px] text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-400 transition-all disabled:opacity-50 items-center gap-2"
               >
                 {isLoggingIn ? 'Memuat...' : 'Masuk / Login'}
               </button>
+              
+              {/* Mobile Menu Toggle */}
+              <button 
+                className="md:hidden p-2 text-slate-700 hover:bg-white/50 rounded-lg active:scale-95 transition-all"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="md:hidden absolute top-[76px] left-4 right-4 bg-white shadow-2xl rounded-2xl border border-slate-100 overflow-hidden transform-gpu"
+              >
+                <div className="flex flex-col font-bold text-slate-800 px-6 py-2 divide-y divide-slate-100">
+                  <a href="#cara-kerja" onClick={(e) => handleNavClick(e, 'cara-kerja')} className="py-4 hover:text-emerald-600 transition-colors">Cara Kerja</a>
+                  <a href="#fitur" onClick={(e) => handleNavClick(e, 'fitur')} className="py-4 hover:text-emerald-600 transition-colors">Fitur</a>
+                  <a href="#testimoni" onClick={(e) => handleNavClick(e, 'testimoni')} className="py-4 hover:text-emerald-600 transition-colors">Testimoni</a>
+                  <a href="#faq" onClick={(e) => handleNavClick(e, 'faq')} className="py-4 hover:text-emerald-600 transition-colors">FAQ</a>
+                  <div className="py-5">
+                    <button 
+                      onClick={() => { setIsMobileMenuOpen(false); handleLoginClick(); }}
+                      disabled={isLoggingIn}
+                      className="w-full bg-emerald-500 border-emerald-700 border-2 border-b-[4px] active:border-b-[2px] active:translate-y-[2px] text-white px-4 py-3.5 rounded-xl font-bold text-base hover:bg-emerald-400 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isLoggingIn ? 'Memuat...' : 'Masuk / Login'}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
 
         {/* Hero Content */}
-        <header className="container mx-auto px-6 pt-32 pb-20 md:pt-40 md:pb-28 relative z-20 text-center flex-1 flex flex-col justify-center">
+        <header className="container mx-auto px-4 md:px-6 pt-32 pb-20 md:pt-40 md:pb-28 relative z-20 text-center flex-1 flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto"
+            className="max-w-4xl mx-auto w-full mt-8 md:mt-0"
           >
-            <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 leading-[1.15] tracking-tight drop-shadow-sm">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 mb-6 md:mb-8 leading-[1.15] tracking-tight drop-shadow-sm px-2">
               Belajar Mengaji Lebih <br className="hidden md:block"/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 drop-shadow-sm">Asyik & Interaktif.</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-800 mb-12 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm px-4 md:px-0">
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-800 mb-8 md:mb-12 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-sm px-2 md:px-0">
               Langkah awal membaca Al-Qur'an untuk semua usia. Dilengkapi teknologi cerdas, kuis seru, dan pelokalan yang ramah pemula.
             </p>
 
@@ -248,7 +311,7 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
       <section id="fitur" className="bg-slate-50 py-24 relative">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Dirancang Untuk Semua</h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight">Dirancang Untuk Semua</h2>
             <p className="text-lg text-slate-500">Kami percaya setiap orang berhak belajar Al-Qur'an dengan cara yang menyenangkan.</p>
           </div>
           
@@ -282,7 +345,7 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
       <section id="testimoni" className="py-24 bg-white relative">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Apa Kata Mereka?</h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight">Apa Kata Mereka?</h2>
             <p className="text-lg text-slate-500">Testimoni nyata dari mereka yang telah terbantu oleh Alifin.</p>
           </div>
           
@@ -362,8 +425,8 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
       {/* FAQ Section */}
       <section id="faq" className="py-24 bg-slate-50 relative">
         <div className="container mx-auto px-6 max-w-3xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Pertanyaan Seputar Alifin</h2>
+          <div className="text-center mb-16 px-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight">Pertanyaan Seputar Alifin</h2>
           </div>
           
           <div className="flex flex-col gap-4">
@@ -411,8 +474,8 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
            transition={{ duration: 0.6 }}
            className="container mx-auto px-6 relative z-10 text-center max-w-3xl"
         >
-           <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">Mari Mulai Perjalanan Membaca Al-Qur'an</h2>
-           <p className="text-xl text-emerald-100 mb-12 font-medium">Bismillah, luangkan 5 menit hari ini untuk mengenal huruf hijaiyah.</p>
+           <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-6 md:mb-8 leading-tight">Mari Mulai Perjalanan Membaca Al-Qur'an</h2>
+           <p className="text-lg md:text-xl text-emerald-100 mb-8 md:mb-12 font-medium">Bismillah, luangkan 5 menit hari ini untuk mengenal huruf hijaiyah.</p>
            <button 
             onClick={handleLoginClick}
             disabled={isLoggingIn}
@@ -425,7 +488,9 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
       
       <footer className="bg-white py-16 text-center text-slate-500 font-medium border-t-2 border-slate-200 flex flex-col items-center gap-6 pb-[100px] sm:pb-16 relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
-          <Logo size="md" className="mx-auto justify-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 transform hover:scale-105" />
+          <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="cursor-pointer block focus:outline-none">
+            <Logo size="md" className="mx-auto justify-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 transform hover:scale-105" />
+          </a>
           
           <div className="max-w-md mx-auto mt-6 mb-8 flex flex-col gap-2">
              <p className="text-slate-600 font-bold text-lg">Alifin.</p>
@@ -437,6 +502,21 @@ export function LandingPage({ onStart, onLogin }: { onStart: () => void, onLogin
           <p className="text-sm font-bold">&copy; {new Date().getFullYear()} Alifin. Dibuat dengan ❤️ untuk umat.</p>
         </div>
       </footer>
+      {/* Back to Top Floating Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 30, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-emerald-500 text-white p-3 md:p-4 rounded-full shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 active:scale-95 transition-all z-50 border-2 border-emerald-400 cursor-pointer"
+            aria-label="Kembali ke Atas"
+          >
+            <ArrowUp className="w-6 h-6 md:w-7 md:h-7" strokeWidth={3} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

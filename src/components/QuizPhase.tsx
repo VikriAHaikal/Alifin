@@ -11,6 +11,21 @@ interface Props {
   onBack: () => void;
 }
 
+const getQuizFontSize = (length: number) => {
+  if (length > 20) return 'text-[1.25rem] sm:text-[1.75rem] md:text-[2.25rem] lg:text-[2.75rem]';
+  if (length > 15) return 'text-[1.5rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem]';
+  if (length > 10) return 'text-[1.75rem] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[3.75rem]';
+  if (length > 6) return 'text-[2.25rem] sm:text-[3.25rem] md:text-[3.75rem] lg:text-[4.25rem]';
+  if (length > 3) return 'text-[2.75rem] sm:text-[3.75rem] md:text-[4.5rem] lg:text-[5rem]';
+  return 'text-[3.5rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[6rem]';
+};
+
+const getQuestionTextSize = (length: number) => {
+  if (length > 70) return 'text-xl md:text-2xl lg:text-3xl';
+  if (length > 50) return 'text-xl md:text-2xl lg:text-3xl';
+  return 'text-2xl md:text-3xl lg:text-4xl';
+};
+
 export function QuizPhase({ level, onFinish, onBack }: Props) {
   const isExam = level % STAGES_PER_VOLUME === 0;
   const questionCount = getQuestionCount(level);
@@ -176,7 +191,7 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden text-slate-800 relative z-10 w-full">
+    <div className="flex-1 flex flex-col overflow-hidden text-slate-800 relative z-10 w-full">
       {showExitConfirm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <motion.div 
@@ -251,7 +266,7 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
             
             {/* Left side: Question & Audio */}
             <div className="flex flex-col items-center w-full lg:w-2/5 max-w-2xl shrink-0 lg:sticky lg:top-4">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black mb-4 lg:mb-6 text-center leading-tight flex flex-col items-center gap-4 text-slate-800 w-full shrink-0">
+              <h2 className={`${getQuestionTextSize(currentQ.question.length)} font-black mb-4 lg:mb-6 text-center leading-tight flex flex-col items-center gap-4 text-slate-800 w-full shrink-0`}>
                 <span className="bg-white px-6 md:px-8 py-4 md:py-6 rounded-[2rem] shadow-sm border-4 border-slate-200 border-b-[8px] w-full">{currentQ.question}</span>
                 {(currentQ.type === 'audio' || currentQ.type === 'sequence') && (
                   <motion.button
@@ -350,7 +365,7 @@ export function QuizPhase({ level, onFinish, onBack }: Props) {
                             : 'text-emerald-800 border-slate-200 hover:border-emerald-300 hover:border-b-emerald-400 cursor-pointer'}
                       `}
                     >
-                      <span className={`font-arabic ${opt.length > 3 ? 'text-[2.5rem] sm:text-[3rem] md:text-[4rem]' : 'text-[3.5rem] sm:text-[4.5rem] md:text-[5.5rem]'} font-bold leading-none flex items-center justify-center transition-transform h-full drop-shadow-sm text-center ${!isSelectedAndWrong && !isPicked ? 'group-hover:scale-110' : ''}`}>
+                      <span className={`font-arabic ${getQuizFontSize(opt.length)} font-bold leading-none flex items-center justify-center transition-transform h-full drop-shadow-sm text-center ${!isSelectedAndWrong && !isPicked ? 'group-hover:scale-110' : ''}`}>
                         {opt}
                       </span>
                     </motion.button>

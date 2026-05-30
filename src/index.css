@@ -11,6 +11,11 @@
   100% { transform: translateX(120vw); }
 }
 
+@keyframes shine {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(300%); }
+}
+
 body {
   font-family: var(--font-sans);
 }

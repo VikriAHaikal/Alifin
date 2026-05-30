@@ -484,7 +484,7 @@ export const getLettersForLevel = (level: number) => {
         { char: "بِكَلِمَ", parts: ["بِ", "كَ", "لِ", "مَ"], name: "Bikalima", hint: "Perhatikan perubahan bentuk Kaf saat di tengah bersambung" },
         { char: "فَنَسِيَ", parts: ["فَ", "نَ", "سِ", "يَ"], name: "Fanasiya", hint: "Sin kasrah dan Ya fathah" },
         { char: "وَغَسَقِ", parts: ["وَ", "غَ", "سَ", "قِ"], name: "Waghasaqi", hint: "4 huruf, dibaca pendek semua" },
-        { char: "خَشِيَ", parts: ["خَ", "شِ", "يَ"], name: "Khashiya", hint: "Syin kasrah, Ya fathah" },
+        { char: "خَشِيَ", parts: ["خَ", "شِ", "يَ"], name: "Khasyiya", hint: "Syin kasrah, Ya fathah" },
         { char: "عَالِيَ", parts: ["عَ", "ا", "لِ", "يَ"], name: "Aaliya", hint: "Ain panjang, Lam kasrah, Ya fathah" },
       ];
 
@@ -561,6 +561,115 @@ export const getLettersForLevel = (level: number) => {
         (item, index) =>
           ({
             id: 118000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+    
+    if (level === 19) {
+      const iqra3Tahap5Data = [
+        { char: "بُ", parts: ["بُ"], name: "Bu", hint: "Harakat Dhammah (melengkung di atas huruf) dibaca 'u', Ba menjadi Bu" },
+        { char: "تُ", parts: ["تُ"], name: "Tu", hint: "Huruf Ta dengan Dhammah dibaca Tu" },
+        { char: "رُسُلُ", parts: ["رُ", "سُ", "لُ"], name: "Rusulu", hint: "Semua huruf berharakat Dhammah, dibaca pendek berurutan" },
+        { char: "كُتِبَ", parts: ["كُ", "تِ", "بَ"], name: "Kutiba", "hint": "Kaf dhammah, Ta kasrah, Ba fathah. Semua dibaca pendek" },
+        { char: "صُحُفِ", parts: ["صُ", "حُ", "فِ"], name: "Shuhufi", "hint": "Shad dhammah, Ha besar dhammah, Fa kasrah. Tidak ada yang dipanjangkan" },
+        { char: "جُعِلَ", parts: ["جُ", "عِ", "لَ"], name: "Ju'ila", "hint": "Jim dhammah, Ain kasrah di tengah bersambung, Lam fathah" },
+        { char: "بُوْ", parts: ["بُ", "وْ"], name: "Buu", hint: "Dhammah diikuti huruf Wau sukun dibaca panjang u (uu)" },
+        { char: "تُوْ", parts: ["تُ", "وْ"], name: "Tuu", hint: "Ta dengan Dhammah diikuti Wau sukun dibaca panjang" },
+        { char: "يَمُوْتُ", parts: ["يَ", "مُ", "وْ", "تُ"], name: "Yamuutu", hint: "Ya bersambung Mim lalu wau sukun. Perhatikan huruf Mim-nya bisa agak tersembunyi (bersusun)" },
+        { char: "يَعُوْذُ", parts: ["يَ", "عُ", "وْ", "ذُ"], name: "Ya'uudzu", hint: "Bentuk huruf Ain bersambung di tengah dengan wau sukun" },
+        { char: "تَكُوْنُ", parts: ["تَ", "كُ", "وْ", "نُ"], name: "Takuunu", hint: "Bentuk huruf Kaf saat bersambung di tengah dengan wau sukun" },
+        { char: "تَهُوْمُ", parts: ["تَ", "هُ", "وْ", "مُ"], name: "Tahuumu", hint: "Ta bersambung Ha besar (perhatikan bentuk Ha di tengah) dengan wau sukun" },
+        { char: "عَلِيْمُوْ", parts: ["عَ", "لِ", "يْ", "مُ", "وْ"], name: "'Aliimuu", hint: "Lam kasrah ya sukun bersambung huruf Mim bersusun dengan wau sukun" },
+        { char: "يُحِيْطُوْ", parts: ["يُ", "حِ", "يْ", "طُ", "وْ"], name: "Yuhiithuu", hint: "Kasrah ya sukun digabung dengan dhammah wau sukun" },
+        { char: "مُوْسٰى", parts: ["مُ", "وْ", "سٰى"], name: "Muusaa", hint: "Dhammah wau sukun, dikombinasikan Sin fatah berdiri pada ya tanpa titik" },
+        { char: "عِيْسٰى", parts: ["عِ", "يْ", "سٰى"], name: "'Iisaa", hint: "Kasrah ya sukun dikombinasikan dengan fatah berdiri pada ya tanpa titik" },
+        { char: "يُوْحٰى", parts: ["يُ", "وْ", "حٰى"], name: "Yuhaa", hint: "Dhammah wau sukun dan fatah berdiri pada ya tanpa titik" },
+        { char: "هَارُوْنَ", parts: ["هَ", "ا", "رُ", "وْ", "نَ"], name: "Haaruuna", hint: "Ha besar fathah alif dan Ra dhammah mad wau sukun" },
+        { char: "قَارُوْنَ", parts: ["قَ", "ا", "رُ", "وْ", "نَ"], name: "Qaaruuna", hint: "Kombinasi fathah mad alif dan dhammah mad wau sukun" },
+        { char: "عُلُوْمِهٖ", parts: ["عُ", "لُ", "وْ", "مِ", "هٖ"], name: "'Uluumihii", hint: "Ain dhammah di awal, Lam dhammah wau sukun, diakhiri Ha' Dhamir kasrah berdiri" },
+        { char: "بِقُلُوْبِهٖى", parts: ["بِ", "قُ", "لُ", "وْ", "بِ", "هٖى"], name: "Biquluubihii", hint: "Ba, Qaf, Lam mad wau sukun, diakhiri Ba dan Ha kasrah berdiri ya tanpa titik" },
+        { char: "وَجُنُوْبِـهٖى", parts: ["وَ", "جُ", "نُ", "وْ", "بِ", "هٖى"], name: "Wajunuubihii", hint: "Wau, Jim, Nun wau sukun, diakhiri Ba dan Ha kasrah berdiri ya tanpa titik" },
+      ];
+
+      return iqra3Tahap5Data.map(
+        (item, index) =>
+          ({
+            id: 119000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+    
+    if (level === 20) {
+      const iqra3Tahap6Data = [
+        { char: "كَانُوْا", parts: ["كَ", "ا", "نُ", "وْ", "ا"], name: "Kaanuu", hint: "Terdapat Alif tanpa harakat setelah mad Wau. Alif ini dianggap tidak ada letaknya, namun Nu tetap dibaca panjang (Nuu)" },
+        { char: "قَالُوْا", parts: ["قَ", "ا", "لُ", "وْ", "ا"], name: "Qaaluu", hint: "Qa panjang (fathah alif) dan Luu panjang (dhammah wau sukun). Alif di belakang diabaikan" },
+        { char: "اٰمَنُوْا", parts: ["اٰ", "مَ", "نُ", "وْ", "ا"], name: "Aamanuu", hint: "A panjang (fathah berdiri), lalu Ma, lalu Nuu panjang diikuti Alif tanpa tanda" },
+        { char: "فَقَالُوْا", parts: ["فَ", "قَ", "ا", "لُ", "وْ", "ا"], name: "Faqaaluu", hint: "Fa, lalu Qa panjang alif, Luu panjang wau sukun dengan alif tidak dianggap" },
+        { char: "لَهٗ", parts: ["لَ", "هٗ"], name: "Lahuu", hint: "Ha Dhamir berharakat Dhammah Terbalik (seperti angka 6). Ini berarti dibaca panjang U (huu)" },
+        { char: "مَالَهٗ", parts: ["مَ", "ا", "لَ", "هٗ"], name: "Maalahuu", hint: "Ma panjang (mad alif), La pendek, Huu panjang (dhammah terbalik)" },
+        { char: "عَمَلُهٗ", parts: ["عَ", "مَ", "لُ", "هٗ"], name: "'Amaluhuu", hint: "Semua huruf di depan pendek, lalu diakhiri Huu panjang (dhammah terbalik)" },
+        { char: "رَسُوْلُهٗ", parts: ["رَ", "سُ", "وْ", "لُ", "هٗ"], name: "Rasuuluhuu", hint: "Suu panjang (wau sukun), lalu diakhiri Huu panjang (dhammah terbalik)" },
+        { char: "جُنُوْدُهٗ", parts: ["جُ", "نُ", "وْ", "دُ", "هٗ"], name: "Junuuduhuu", hint: "Nuu panjang (Wau sukun). Huu di akhir panjang (Dhammah terbalik)" },
+        { char: "اٰيَاتُهٗ", parts: ["اٰ", "يَ", "ا", "تُ", "هٗ"], name: "Aayaatuhuu", hint: "A panjang (fatah berdiri), Yaa panjang (fatah alif), Tu, Huu panjang (dhammah terbalik)" },
+        { char: "يُرِيْدُوْا", parts: ["يُ", "رِ", "يْ", "دُ", "وْ", "ا"], name: "Yuriiduu", hint: "Rii panjang (kasrah ya sukun), Duu panjang (dammah wau sukun alif)" },
+        { char: "قَرِيْنُهٗ", parts: ["قَ", "رِ", "يْ", "نُ", "هٗ"], name: "Qariinuhuu", hint: "Qa pendek, Rii panjang (kasrah ya sukun), Nu pendek, Huu panjang dhammah terbalik" },
+        { char: "وَرَسُوْلُهٗ", parts: ["وَ", "رَ", "سُ", "وْ", "لُ", "هٗ"], name: "Warasuuluhuu", hint: "Wa, Ra, Lu pendek, Suu panjang wau sukun, Huu panjang dhammah terbalik" },
+        { char: "وَنُوْرُهٗ", parts: ["وَ", "نُ", "وْ", "رُ", "هٗ"], name: "Wanuuruhuu", hint: "Wa, Ru pendek, Nuu panjang wau sukun, dan Huu panjang dhammah terbalik" },
+        { char: "عَذَابُهٗ", parts: ["عَ", "ذَ", "ا", "بُ", "هٗ"], name: "'Azaabuhuu", hint: "Ain pendek, Zaa panjang, Bu pendek, Huu panjang dhammah terbalik" },
+        { char: "قَالُوْا يٰمُوْسٰى", parts: ["قَ", "ا", "لُ", "وْ", "ا", " ", "يٰ", "مُ", "وْ", "سٰى"], name: "Qaaluu Yaamuusaa", hint: "Potongan ayat: 'Mereka berkata: Wahai Musa'. Ada alif tak dibaca, fatah berdiri, dan dhammah wau" },
+      ];
+
+      return iqra3Tahap6Data.map(
+        (item, index) =>
+          ({
+            id: 120000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+    
+    if (level === 21) {
+      const iqra3Tahap7Data = [
+        { char: "وَمَا كَانُوْا عَالِمِيْنَ", parts: ["وَ", "مَ", "ا", " ", "كَ", "ا", "نُ", "وْ", "ا", " ", "عَ", "ا", "لِ", "مِ", "يْ", "نَ"], name: "Wamaa kaanuu 'aalimiina", hint: "Potongan ayat mencakup mad alif, wau sukun (alif diabaikan), dan ya sukun. Perhatikan bentuk Lam bersambung Mim di kata terakhir." },
+        { char: "خَالِدِيْنَ فِيْهَا", parts: ["خَ", "ا", "لِ", "دِ", "يْ", "نَ", " ", "فِ", "يْ", "هَ", "ا"], name: "Khaalidiina fiihaa", hint: "Kha panjang, Di panjang (ya sukun), Fii panjang (ya sukun), Haa panjang (alif). Perhatikan detail letak titik-titiknya." },
+        { char: "سَيَقُوْلُوْنَ لَهٗ", parts: ["سَ", "يَ", "قُ", "وْ", "لُ", "وْ", "نَ", " ", "لَ", "هٗ"], name: "Sayaquuluuna lahuu", hint: "Terdapat dua huruf mad wau sukun berurutan di huruf berbeda, dan diakhiri dengan Ha panjang (dhammah terbalik)." },
+        { char: "بِمَا كَانُوْا يُوْعَدُوْنَ", parts: ["بِ", "مَ", "ا", " ", "كَ", "ا", "نُ", "وْ", "ا", " ", "يُ", "وْ", "عَ", "دُ", "وْ", "نَ"], name: "Bimaa kaanuu yuu'aduuna", hint: "Bacaan utuh yang menguji konsistensi panjang pada wau sukun berurutan. Uji juga bentuk Ain dan Wau sukun." },
+        { char: "هٰذِهٖ نَاقَةُ", parts: ["هٰ", "ذِ", "هٖ", " ", "نَ", "ا", "قَ", "تُ"], name: "Haadzihii naaqatu", hint: "Kombinasi fathah berdiri, kasrah berdiri pada Ha', dan diakhiri dengan bentuk Ta' Marbutah (ة)." },
+        { char: "يَلِجُوْنَ فِيْهِ", parts: ["يَ", "لِ", "جُ", "وْ", "نَ", " ", "فِ", "يْ", "هِ"], name: "Yalijuuna fiihi", hint: "Bentuk Lam yang bersambung dengan Jim. Awas Jim-nya ngumpet bersusun ke bawah, sering terkecoh menjadi huruf Ba." },
+        { char: "بِكَلِمَاتِهٖ", parts: ["بِ", "كَ", "لِ", "مَ", "ا", "تِ", "هٖ"], name: "Bikalimaatihii", hint: "Sangat menjebak! Kaf tersambung Lam lalu disambung Mim (bersusun bertumpuk). Diakhiri Ha kasrah berdiri." },
+        { char: "وَاٰيَاتُهٗ", parts: ["وَ", "اٰ", "يَ", "ا", "تُ", "هٗ"], name: "Wa 'aayaatuhuu", hint: "Menggunakan Alif fathah berdiri, lalu mad Alif biasa, dan Ha dhamir (dhammah terbalik)." },
+        { char: "فِيْ جِيْدِهَا", parts: ["فِ", "يْ", " ", "جِ", "يْ", "دِ", "هَ", "ا"], name: "Fii jiidihaa", hint: "Gabungan dua huruf kasrah panjang (ya sukun) berbeda kata yang berdampingan." },
+        { char: "لِعِبَادِهٖى", parts: ["لِ", "عِ", "بَ", "ا", "دِ", "هٖى"], name: "Li'ibaadihii", hint: "Bentuk Ain di tengah. Huruf Ha dhamir disambung Ya tanpa titik sehingga berbunyi 'hii' panjang." },
+        { char: "فَنَادٰى فِيْهَا", parts: ["فَ", "نَ", "ا", "دٰى", " ", "فِ", "يْ", "هَ", "ا"], name: "Fanaadaa fiihaa", hint: "Kombinasi mad alif, fathah berdiri pada ya tanpa titik, mad ya sukun, dan mad alif biasa." },
+        { char: "رَسُوْلُهٗ يُنَادِيْ", parts: ["رَ", "سُ", "وْ", "لُ", "هٗ", " ", "يُ", "نَ", "ا", "دِ", "يْ"], name: "Rasuuluhuu yunaadii", hint: "Kata yang disambung dari wau sukun ke Ha dhamir terbalik, lalu Ya fathah." },
+        { char: "يُجَادِلُوْنَ فِيْهَا", parts: ["يُ", "جَ", "ا", "دِ", "لُ", "وْ", "نَ", " ", "فِ", "يْ", "هَ", "ا"], name: "Yujaadiluuna fiihaa", hint: "Awas huruf Jim di depan. Panjang mad secara konsisten harus dilantunkan tanpa ragu." },
+        { char: "قِيْلَ لَهُمُ", parts: ["قِ", "يْ", "لَ", " ", "لَ", "هُ", "مُ"], name: "Qiila lahumu", hint: "Qaf mad ya sukun, disambung huruf Lam berdekatan (karena dipisah spasi). Huruf Ha besar berharakat dhammah di tengah." },
+        { char: "تُبِيْدُوْنَ", parts: ["تُ", "بِ", "يْ", "دُ", "وْ", "نَ"], name: "Tubiiduuna", hint: "Menjebak! Rangkaian titik atas dan bawah yang rapat: Tu (titik dua), Bi (satu bawah), Ya (dua bawah)." },
+        { char: "سَلَحَفُوْا", parts: ["سَ", "لَ", "حَ", "فُ", "وْ", "ا"], name: "Salahafuu", hint: "Bentuk Lam bersambung Ha kecil (ngumpet). Perhatikan alif kosong lambang jamak di ujung." },
+        { char: "فَعَصٰى اٰدَمُ", parts: ["فَ", "عَ", "صٰى", " ", "اٰ", "دَ", "مُ"], name: "Fa'ashaa Aadamu", hint: "Potongan ayat. Ain bersambung Shad yang memanjang dengan fathah berdiri (pada Ya tanpa titik). Disusul Alif fathah berdiri." }
+      ];
+
+      return iqra3Tahap7Data.map(
+        (item, index) =>
+          ({
+            id: 121000 + index,
             char: item.char,
             parts: item.parts.filter((p) => p !== " "),
             name: item.name,

@@ -12,9 +12,10 @@ interface Props {
   isExam?: boolean;
   userName?: string;
   currentLevel?: number;
+  isBypassMode?: boolean;
 }
 
-export function Feedback({ score, total, onNextLevel, onRetry, isExam, userName, currentLevel }: Props) {
+export function Feedback({ score, total, onNextLevel, onRetry, isExam, userName, currentLevel, isBypassMode }: Props) {
   const percentage = Math.round((score / total) * 100);
   const isPass = percentage >= 80;
 
@@ -63,8 +64,11 @@ export function Feedback({ score, total, onNextLevel, onRetry, isExam, userName,
           
           <p className="text-lg font-medium mb-4 text-slate-500">Diberikan sebagai penghargaan kepada</p>
           
-          <div className="text-3xl sm:text-5xl font-black text-emerald-600 mb-8 pb-4 border-b-2 border-emerald-100 px-12">
+          <div className="text-3xl sm:text-5xl font-black text-emerald-600 mb-8 pb-4 border-b-2 border-emerald-100 px-12 relative flex flex-col items-center">
             {userName || 'Siswa Alifin'}
+            {isBypassMode && (
+              <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-300 drop-shadow-sm flex items-center gap-1 mt-4"><Award className="w-3 h-3"/> Mode Tester (Progres Tidak Disimpan)</span>
+            )}
           </div>
 
           <p className="text-base font-medium max-w-md text-slate-500 leading-relaxed mb-10">
@@ -118,7 +122,12 @@ export function Feedback({ score, total, onNextLevel, onRetry, isExam, userName,
             : 'Perbanyak latihan, kamu pasti bisa mencapai skor minimal 80%.'}
         </p>
 
-        <div className={`bg-slate-50 rounded-[2rem] px-8 sm:px-12 py-6 mb-10 border-4 border-slate-100 shadow-sm flex flex-col items-center ${isPass ? 'text-emerald-700' : 'text-slate-700'}`}>
+        <div className={`bg-slate-50 rounded-[2rem] px-8 sm:px-12 py-6 mb-10 border-4 border-slate-100 shadow-sm flex flex-col items-center ${isPass ? 'text-emerald-700' : 'text-slate-700'} relative`}>
+          {isBypassMode && (
+            <div className="absolute -top-3 right-0 left-0 flex justify-center">
+               <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-300 z-10 drop-shadow-sm flex items-center gap-1"><Award className="w-3 h-3"/> Mode Tester Actif (Skor & Progres Tidak Disimpan)</span>
+            </div>
+          )}
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             {[...Array(total)].map((_, i) => (
               <Star 

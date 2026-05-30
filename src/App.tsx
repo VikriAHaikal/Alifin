@@ -37,10 +37,16 @@ const loadState = (key: string, defaultValue: any) => {
 };
 
 export default function App() {
-  const { user, profile, loading, updateProfile, logOut, signInWithGoogle } = useAuth();
+  const { user, profile, loading, updateProfile, logOut, signInWithGoogle, deleteAccount } = useAuth();
   const [userName, setUserName] = useState<string>(() => loadState('alifin_userName', ''));
   const [gender, setGender] = useState<Gender>(() => loadState('alifin_gender', null));
-  const [view, setView] = useState<ViewState>(() => gender ? 'DASHBOARD' : 'LANDING');
+  const [view, setView] = useState<ViewState>(() => {
+    const savedView = loadState('alifin_view', null);
+    if (savedView === 'MAP' || savedView === 'PROFILE' || savedView === 'DASHBOARD') {
+      return savedView;
+    }
+    return gender ? 'DASHBOARD' : 'LANDING';
+  });
   const [points, setPoints] = useState<number>(() => loadState('alifin_points', 0));
   const [levelScores, setLevelScores] = useState<Record<number, number>>(() => loadState('alifin_levelScores', {}));
   const [levelWrongLetters, setLevelWrongLetters] = useState<Record<number, number[]>>(() => loadState('alifin_levelWrongLetters', {}));
@@ -48,14 +54,20 @@ export default function App() {
     const saved = loadState('alifin_maxUnlockedLevel', 1);
     return Math.min(TOTAL_LEVELS, Math.max(1, saved));
   });
-  const [currentLevel, setCurrentLevel] = useState(1);
+  const [isBypassMode, setIsBypassMode] = useState(false);
+
+  const effectiveMaxLevel = isBypassMode ? TOTAL_LEVELS : maxUnlockedLevel;
+  const [currentLevel, setCurrentLevel] = useState<number>(() => {
+    const saved = loadState('alifin_currentLevel', 1);
+    return Math.min(TOTAL_LEVELS, Math.max(1, saved));
+  });
   const [lastScore, setLastScore] = useState(0);
   const [isPlayingBGM, setIsPlayingBGM] = useState(false);
   const [userMutedBGM, setUserMutedBGM] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM && hasInteracted;
+  const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM;
   const shouldPlayRef = useRef(shouldPlay);
   shouldPlayRef.current = shouldPlay;
 
@@ -74,7 +86,21 @@ export default function App() {
 
       // If they just logged in and we're on landing/onboarding, but they have a profile
       if (profile.gender) {
-        setView(prev => (prev === 'LANDING' || prev === 'ONBOARDING') ? 'DASHBOARD' : prev);
+        setView(prev => {
+           const nextView = (prev === 'LANDING' || prev === 'ONBOARDING') ? 'DASHBOARD' : prev;
+           if (nextView === 'DASHBOARD' && prev !== 'DASHBOARD') {
+              setTimeout(() => {
+                 if (audioRef.current && !userMutedBGM) {
+                    audioRef.current.volume = 0.4;
+                    const p = audioRef.current.play();
+                    if (p !== undefined) {
+                       p.then(() => setIsPlayingBGM(true)).catch(() => setIsPlayingBGM(false));
+                    }
+                 }
+              }, 100);
+           }
+           return nextView;
+        });
       } else if (user) {
         // They are logged in but don't have a profile yet (new user or incomplete)
         setView(prev => prev === 'LANDING' ? 'ONBOARDING' : prev);
@@ -89,7 +115,9 @@ export default function App() {
     localStorage.setItem('alifin_levelScores', JSON.stringify(levelScores));
     localStorage.setItem('alifin_levelWrongLetters', JSON.stringify(levelWrongLetters));
     localStorage.setItem('alifin_maxUnlockedLevel', JSON.stringify(Math.min(TOTAL_LEVELS, Math.max(1, maxUnlockedLevel))));
-  }, [userName, gender, points, maxUnlockedLevel, levelScores, levelWrongLetters]);
+    localStorage.setItem('alifin_view', JSON.stringify(view));
+    localStorage.setItem('alifin_currentLevel', JSON.stringify(currentLevel));
+  }, [userName, gender, points, maxUnlockedLevel, levelScores, levelWrongLetters, view, currentLevel]);
 
   useEffect(() => {
     // Initialize background music only once dynamically
@@ -110,9 +138,12 @@ export default function App() {
       const p = bgm.play();
       if (p !== undefined) {
          p.then(() => {
-            if (!shouldPlayRef.current) {
+            const currentView = JSON.parse(localStorage.getItem('alifin_view') || `"${view}"`);
+            const shouldPlayNow = currentView !== 'LEARNING' && currentView !== 'QUIZ' && currentView !== 'LANDING' && currentView !== 'ONBOARDING' && !userMutedBGM;
+            if (!shouldPlayNow) {
                audioRef.current?.pause();
             } else {
+               if (audioRef.current) audioRef.current.volume = 0.4;
                setIsPlayingBGM(true); // Manually trigger since it was started
             }
             setHasInteracted(true);
@@ -135,68 +166,14 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
 
-    let fadeInterval: NodeJS.Timeout;
-
-    const shouldPlay = view !== 'LEARNING' && view !== 'QUIZ' && view !== 'LANDING' && view !== 'ONBOARDING' && !userMutedBGM && hasInteracted;
-
-    if (!shouldPlay && isPlayingBGM) {
-      fadeInterval = setInterval(() => {
-        if (audio.volume > 0.02) {
-          audio.volume = Math.max(0, audio.volume - 0.02);
-        } else {
-          audio.volume = 0;
-          audio.pause();
-          setIsPlayingBGM(false);
-          clearInterval(fadeInterval);
-        }
-      }, 50);
-    } else if (shouldPlay && (!isPlayingBGM || audio.volume < 0.38)) {
-      if (audio.paused) {
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            setIsPlayingBGM(true);
-            fadeInterval = setInterval(() => {
-              if (audio.volume < 0.38) {
-                audio.volume = Math.min(0.4, audio.volume + 0.02);
-              } else {
-                audio.volume = 0.4;
-                clearInterval(fadeInterval);
-              }
-            }, 50);
-          }).catch(err => {
-            console.log("Auto-play prevented", err);
-            setIsPlayingBGM(false);
-          });
-        }
-      } else {
-         setIsPlayingBGM(true);
-         fadeInterval = setInterval(() => {
-            if (audio.volume < 0.38) {
-              audio.volume = Math.min(0.4, audio.volume + 0.02);
-            } else {
-              audio.volume = 0.4;
-              clearInterval(fadeInterval);
-            }
-         }, 50);
-      }
-    }
-
-    return () => {
-      if (fadeInterval) clearInterval(fadeInterval);
-    };
-  }, [view, isPlayingBGM, userMutedBGM, hasInteracted]);
 
 
   const handleOnboardingComplete = (name: string, selectedGender: 'ikhwan' | 'akhwat') => {
     playSound('transition');
     setUserName(name);
     setGender(selectedGender);
-    setView('DASHBOARD');
+    setViewWithBGM('DASHBOARD');
     
     if (user) {
       updateProfile({ userName: name, gender: selectedGender }).catch(console.error);
@@ -222,43 +199,69 @@ export default function App() {
     }
   };
 
+  const setViewWithBGM = (newView: typeof view) => {
+    setView(newView);
+    if (!audioRef.current) return;
+    const shouldPlay = newView !== 'LEARNING' && newView !== 'QUIZ' && newView !== 'LANDING' && newView !== 'ONBOARDING' && !userMutedBGM;
+    
+    if (!shouldPlay && isPlayingBGM) {
+      audioRef.current.pause();
+      setIsPlayingBGM(false);
+    } else if (shouldPlay && !isPlayingBGM) {
+      audioRef.current.volume = 0.4;
+      const p = audioRef.current.play();
+      if (p !== undefined) {
+        p.then(() => setIsPlayingBGM(true)).catch(() => setIsPlayingBGM(false));
+      }
+    }
+  };
+
   const handleDashboardNavigate = (targetView: 'MAP' | 'LEARNING' | 'PROFILE') => {
     playSound('click');
     if (targetView === 'LEARNING') {
       setCurrentLevel(maxUnlockedLevel);
-      setView('LEARNING');
+      setViewWithBGM('LEARNING');
     } else if (targetView === 'MAP') {
-      setView('MAP');
+      setViewWithBGM('MAP');
     } else if (targetView === 'PROFILE') {
-      setView('PROFILE');
+      setViewWithBGM('PROFILE');
     }
   };
 
   const handleSelectLevel = (level: number) => {
     playSound('click');
     setCurrentLevel(level);
-    setView('LEARNING');
+    setViewWithBGM('LEARNING');
   };
 
   const handleFinishLearning = () => {
     playSound('transition');
-    setView('QUIZ');
+    setViewWithBGM('QUIZ');
   };
 
   const handleFinishQuiz = (score: number, wrongLetterIds: number[]) => {
     const questionCount = getQuestionCount(currentLevel);
-    // Passing score is 80%
-    const passingScore = Math.ceil(questionCount * 0.8);
+    
+    // Calculate stars out of 5 based on percentage
+    const starsEarned = Math.round((score / questionCount) * 5);
+    const isPass = starsEarned >= 4; // 4 out of 5 stars (80%) is required to pass
+
+    if (isBypassMode) {
+      playSound(isPass ? 'win' : 'transition');
+      setLastScore(starsEarned);
+      setViewWithBGM('FEEDBACK');
+      return;
+    }
 
     let newMaxLevel = maxUnlockedLevel;
-    if (score >= passingScore) {
+    if (isPass) {
       playSound('win');
       newMaxLevel = Math.min(TOTAL_LEVELS, Math.max(maxUnlockedLevel, currentLevel + 1));
       setMaxUnlockedLevel(newMaxLevel);
     } else {
       playSound('transition');
     }
-    setLastScore(score);
+    setLastScore(starsEarned);
     
     // Set wrong letters for this level
     const newWrongLetters = { ...levelWrongLetters, [currentLevel]: wrongLetterIds };
@@ -268,10 +271,10 @@ export default function App() {
     const oldScore = levelScores[currentLevel] || 0;
     let newPoints = points;
     let newScores = levelScores;
-    if (score > oldScore) {
-      const difference = score - oldScore;
+    if (starsEarned > oldScore) {
+      const difference = starsEarned - oldScore;
       newPoints = points + (difference * 10);
-      newScores = { ...levelScores, [currentLevel]: score };
+      newScores = { ...levelScores, [currentLevel]: starsEarned };
       setPoints(newPoints);
       setLevelScores(newScores);
     }
@@ -285,20 +288,51 @@ export default function App() {
       }).catch(console.error);
     }
     
-    setView('FEEDBACK');
+    setViewWithBGM('FEEDBACK');
   };
 
   const handleNextLevel = () => {
     playSound('click');
-    if (currentLevel < maxUnlockedLevel) {
+    if (currentLevel < effectiveMaxLevel) {
       setCurrentLevel(currentLevel + 1);
     }
-    setView('MAP');
+    setViewWithBGM('MAP');
   };
 
   const handleRetry = () => {
     playSound('click');
-    setView('LEARNING');
+    setViewWithBGM('LEARNING');
+  };
+
+  const handleResetProgress = async () => {
+    playSound('transition');
+    localStorage.removeItem('alifin_points');
+    localStorage.removeItem('alifin_levelScores');
+    localStorage.removeItem('alifin_levelWrongLetters');
+    localStorage.removeItem('alifin_maxUnlockedLevel');
+    localStorage.removeItem('alifin_view');
+    localStorage.removeItem('alifin_currentLevel');
+    setPoints(0);
+    setLevelScores({});
+    setLevelWrongLetters({});
+    setMaxUnlockedLevel(1);
+    if (user) {
+      await updateProfile({
+        points: 0,
+        levelScores: {},
+        levelWrongLetters: {},
+        maxUnlockedLevel: 1
+      }).catch(console.error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    playSound('transition');
+    if (user) {
+      await deleteAccount().catch(console.error);
+    }
+    // Also clear local data
+    handleReset();
   };
 
   const handleReset = async () => {
@@ -312,18 +346,21 @@ export default function App() {
     localStorage.removeItem('alifin_levelScores');
     localStorage.removeItem('alifin_levelWrongLetters');
     localStorage.removeItem('alifin_maxUnlockedLevel');
+    localStorage.removeItem('alifin_view');
+    localStorage.removeItem('alifin_currentLevel');
     setUserName('');
     setGender(null);
     setPoints(0);
     setLevelScores({});
     setLevelWrongLetters({});
     setMaxUnlockedLevel(1);
+    setIsBypassMode(false);
     setCurrentLevel(1);
-    setView('LANDING');
+    setViewWithBGM('LANDING');
   };
 
   return (
-    <div className="font-sans antialiased text-slate-800 min-h-screen relative overflow-hidden bg-gradient-to-b from-sky-300 to-amber-100">
+    <div className="font-sans antialiased text-slate-800 min-h-[100dvh] relative overflow-hidden bg-gradient-to-b from-sky-300 to-amber-100">
       {/* Animated Clouds and Desert are only global outside of landing page */}
       {view !== 'LANDING' && (
         <>
@@ -354,7 +391,7 @@ export default function App() {
       )}
 
       {/* Main Content Area */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col">
+      <div className="relative z-10 w-full min-h-[100dvh] flex flex-col">
         {loading && (view === 'LANDING' || view === 'ONBOARDING') ? (
           <div className="flex-1 flex flex-col items-center justify-center">
             <div className="w-16 h-16 border-8 border-white/40 border-t-emerald-500 rounded-full animate-spin mb-4 shadow-sm"></div>
@@ -365,7 +402,7 @@ export default function App() {
             {view === 'LANDING' && (
             <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full h-full">
               <LandingPage 
-                onStart={() => setView('ONBOARDING')} 
+                onStart={() => setViewWithBGM('ONBOARDING')} 
                 onLogin={async () => {
                   try {
                     await signInWithGoogle();
@@ -391,12 +428,13 @@ export default function App() {
               <Dashboard 
                 name={userName} 
                 gender={gender} 
-                maxLevel={maxUnlockedLevel} 
+                maxLevel={effectiveMaxLevel} 
                 points={points}
                 levelScores={levelScores}
                 onNavigate={handleDashboardNavigate} 
                 onReset={handleReset}
                 isGuest={!user}
+                isBypassMode={isBypassMode}
                 onLogin={async () => {
                   try {
                     await signInWithGoogle();
@@ -415,7 +453,7 @@ export default function App() {
         
           {view === 'MAP' && (
             <motion.div key="map" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="flex-1 w-full flex flex-col">
-              <Roadmap maxLevel={maxUnlockedLevel} levelScores={levelScores} onSelectLevel={handleSelectLevel} onBack={() => { setView('DASHBOARD'); }} selectedVolume={selectedVolume} onSelectVolume={setSelectedVolume} />
+              <Roadmap maxLevel={effectiveMaxLevel} levelScores={levelScores} onSelectLevel={handleSelectLevel} onBack={() => { setViewWithBGM('DASHBOARD'); }} selectedVolume={selectedVolume} onSelectVolume={setSelectedVolume} isBypassMode={isBypassMode} />
             </motion.div>
           )}
           
@@ -423,11 +461,11 @@ export default function App() {
             <motion.div key="learning" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="flex-1 w-full flex flex-col">
               <LearningPhase 
                 level={currentLevel} 
-                maxLevel={maxUnlockedLevel} 
+                maxLevel={effectiveMaxLevel} 
                 hasScore={levelScores[currentLevel] !== undefined}
                 wrongLetterIds={levelWrongLetters[currentLevel] || []}
                 onComplete={handleFinishLearning} 
-                onBack={() => { setView('MAP'); }} 
+                onBack={() => { setViewWithBGM('MAP'); }} 
               />
             </motion.div>
           )}
@@ -437,7 +475,7 @@ export default function App() {
               <QuizPhase 
                 level={currentLevel} 
                 onFinish={handleFinishQuiz} 
-                onBack={() => { playSound('back'); setView('LEARNING'); }}
+                onBack={() => { playSound('back'); setViewWithBGM('LEARNING'); }}
               />
             </motion.div>
           )}
@@ -446,12 +484,13 @@ export default function App() {
             <motion.div key="feedback" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full flex flex-col">
               <Feedback 
                 score={lastScore} 
-                total={getQuestionCount(currentLevel)} 
+                total={5} 
                 onNextLevel={handleNextLevel} 
                 onRetry={handleRetry} 
                 isExam={currentLevel % STAGES_PER_VOLUME === 0}
                 userName={userName}
                 currentLevel={currentLevel}
+                isBypassMode={isBypassMode}
               />
             </motion.div>
           )}
@@ -467,16 +506,14 @@ export default function App() {
                   if (user) {
                     updateProfile({ userName: newName, gender: newGender }).catch(console.error);
                   }
-                  setView('DASHBOARD');
+                  setViewWithBGM('DASHBOARD');
                 }}
-                onBack={() => setView('DASHBOARD')}
+                onBack={() => setViewWithBGM('DASHBOARD')}
                 onReset={handleReset}
-                onUnlockAll={() => {
-                  setMaxUnlockedLevel(TOTAL_LEVELS);
-                  if (user) {
-                    updateProfile({ maxUnlockedLevel: TOTAL_LEVELS }).catch(console.error);
-                  }
-                }}
+                onResetProgress={handleResetProgress}
+                onDeleteAccount={handleDeleteAccount}
+                isBypassMode={isBypassMode}
+                onToggleBypass={() => setIsBypassMode(!isBypassMode)}
               />
             </motion.div>
           )}
@@ -488,7 +525,7 @@ export default function App() {
         <>
           {view !== 'DASHBOARD' && view !== 'QUIZ' && view !== 'LEARNING' && view !== 'MAP' && view !== 'PROFILE' && (
             <button
-              onClick={() => { playSound('back'); setView('DASHBOARD'); }}
+              onClick={() => { playSound('back'); setViewWithBGM('DASHBOARD'); }}
               className="fixed top-4 left-4 bg-white/90 backdrop-blur p-3 rounded-full shadow-md text-emerald-700 hover:bg-emerald-50 transition-colors z-50 flex items-center justify-center border-2 border-emerald-100"
               title="Kembali ke Dashboard"
             >

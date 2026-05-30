@@ -11,11 +11,12 @@ interface Props {
   onBack: () => void;
   selectedVolume: number | null;
   onSelectVolume: (vol: number | null) => void;
+  isBypassMode?: boolean;
 }
 
-export function Roadmap({ maxLevel, levelScores = {}, onSelectLevel, onBack, selectedVolume, onSelectVolume }: Props) {
+export function Roadmap({ maxLevel, levelScores = {}, onSelectLevel, onBack, selectedVolume, onSelectVolume, isBypassMode }: Props) {
   // Calculate unlocked volume
-  const maxUnlockedVolume = Math.ceil(Math.min(maxLevel, IQRA_VOLUMES * STAGES_PER_VOLUME) / STAGES_PER_VOLUME);
+  const maxUnlockedVolume = isBypassMode ? IQRA_VOLUMES : Math.ceil(Math.min(maxLevel, IQRA_VOLUMES * STAGES_PER_VOLUME) / STAGES_PER_VOLUME);
   
   // Create volumes array from bottom to top
   const volumes = Array.from({ length: IQRA_VOLUMES }, (_, i) => IQRA_VOLUMES - i);
@@ -53,6 +54,15 @@ const VOLUME_DESCRIPTIONS = [
   if (selectedVolume !== null) {
     const startLevel = (selectedVolume - 1) * STAGES_PER_VOLUME + 1;
     const stages = Array.from({ length: STAGES_PER_VOLUME }, (_, i) => startLevel + (STAGES_PER_VOLUME - 1 - i));
+    
+    const volIndex = selectedVolume - 1;
+    const stageColors = ['bg-amber-400', 'bg-emerald-500', 'bg-sky-400', 'bg-rose-400', 'bg-purple-500', 'bg-indigo-500'];
+    const stageShadows = ['#b45309', '#047857', '#0369a1', '#be123c', '#7e22ce', '#4338ca'];
+    const stageRings = ['ring-amber-200', 'ring-emerald-200', 'ring-sky-200', 'ring-rose-200', 'ring-purple-200', 'ring-indigo-200'];
+    
+    const stageBgColor = stageColors[volIndex % stageColors.length];
+    const stageShadowStr = stageShadows[volIndex % stageShadows.length];
+    const stageRingStr = stageRings[volIndex % stageRings.length];
 
     return (
       <div className="min-h-[100dvh] w-full pt-24 pb-32 flex flex-col items-center relative overflow-hidden">
@@ -146,12 +156,12 @@ const VOLUME_DESCRIPTIONS = [
                     disabled={!isUnlocked}
                     className={`relative group rounded-full ${isExam ? 'w-[120px] h-[120px]' : 'w-[100px] h-[100px]'} flex items-center justify-center transition-transform ${
                       isUnlocked 
-                        ? (isExam ? `bg-amber-400 border-[6px] border-white cursor-pointer` : `bg-emerald-500 border-[6px] border-white cursor-pointer`)
+                        ? (isExam ? `bg-amber-400 border-[6px] border-white cursor-pointer` : `${stageBgColor} border-[6px] border-white cursor-pointer`)
                         : `bg-[#e5e7eb] border-[6px] border-white cursor-not-allowed`
-                    } ${isCurrent ? 'ring-8 ring-emerald-200 ring-offset-4 ring-offset-[#eff8fc]' : ''}
+                    } ${isCurrent ? `ring-8 ${isExam ? 'ring-amber-200' : stageRingStr} ring-offset-4 ring-offset-[#eff8fc]` : ''}
                     active:translate-y-[8px] hover:scale-105 duration-200
                     `}
-                    style={{ boxShadow: isUnlocked ? (isExam ? `0 10px 0 0 #b45309` : `0 10px 0 0 #047857`) : `0 10px 0 0 #d1d5db` }}
+                    style={{ boxShadow: isUnlocked ? (isExam ? `0 10px 0 0 #b45309` : `0 10px 0 0 ${stageShadowStr}`) : `0 10px 0 0 #d1d5db` }}
                   >
                     {isUnlocked ? (
                       <div className="flex flex-col items-center">

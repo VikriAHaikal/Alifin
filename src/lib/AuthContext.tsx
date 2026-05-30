@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { User, signInWithPopup, GoogleAuthProvider, signOut, deleteUser } from 'firebase/auth';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
-import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, serverTimestamp, deleteDoc } from 'firebase/firestore';
 
 interface UserProfile {
   userName?: string;
@@ -19,6 +19,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   logOut: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -118,8 +119,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const deleteAccount = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
+    try {
+      // Trying to delete doc if rules allow (which they might not, but let's try silently or just skip if we know it fails)
+      // Actually we just delete the user:
+      await deleteUser(currentUser);
+    } catch (error) {
+      console.error("Failed to delete user", error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, logOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, logOut, updateProfile, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

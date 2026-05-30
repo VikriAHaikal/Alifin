@@ -10,13 +10,18 @@ interface Props {
   onSave: (name: string, gender: 'ikhwan' | 'akhwat') => void;
   onBack: () => void;
   onReset: () => void;
-  onUnlockAll?: () => void;
+  onResetProgress?: () => void;
+  onDeleteAccount?: () => void;
+  isBypassMode?: boolean;
+  onToggleBypass?: () => void;
 }
 
-export function Profile({ name, gender, isGuest, onSave, onBack, onReset, onUnlockAll }: Props) {
+export function Profile({ name, gender, isGuest, onSave, onBack, onReset, onResetProgress, onDeleteAccount, isBypassMode, onToggleBypass }: Props) {
   const [editName, setEditName] = useState(name);
   const [editGender, setEditGender] = useState<'ikhwan' | 'akhwat'>(gender);
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
+  const [showConfirmResetProgress, setShowConfirmResetProgress] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const handleSave = () => {
     if (!editName.trim()) return;
@@ -128,28 +133,54 @@ export function Profile({ name, gender, isGuest, onSave, onBack, onReset, onUnlo
           
           <hr className="border-slate-100 my-1" />
 
-          {/* Logout Section */}
-          <button
-             onClick={() => { playSound('click'); setShowConfirmLogout(true); }}
-             className="w-full py-3 bg-white border-2 border-red-100 text-red-500 font-bold rounded-xl hover:bg-red-50 hover:border-red-200 active:scale-95 transition-all flex items-center justify-center gap-2"
-           >
-             <LogOut className="w-4 h-4" />
-             Keluar / Ganti Akun
-           </button>
+          {/* Account/Progress Actions */}
+          <div className="flex flex-col gap-2">
+            {onResetProgress && (
+              <button
+                onClick={() => { playSound('click'); setShowConfirmResetProgress(true); }}
+                className="w-full py-3 bg-white border-2 border-amber-100 text-amber-600 font-bold rounded-xl hover:bg-amber-50 hover:border-amber-200 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                Reset Progres Semua Level
+              </button>
+            )}
+
+            <button
+               onClick={() => { playSound('click'); setShowConfirmLogout(true); }}
+               className="w-full py-3 bg-white border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all flex items-center justify-center gap-2"
+             >
+               <LogOut className="w-4 h-4" />
+               Keluar Akun
+             </button>
+
+             {onDeleteAccount && !isGuest && (
+              <button
+                onClick={() => { playSound('click'); setShowConfirmDelete(true); }}
+                className="w-full py-3 bg-red-500 border-2 border-red-600 text-white font-bold rounded-xl hover:bg-red-400 hover:border-red-500 active:scale-95 transition-all flex items-center justify-center gap-2 mt-2"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                Hapus Akun
+              </button>
+            )}
+           </div>
 
            {/* Unlock All Levels Cheat for User */}
-           {onUnlockAll && (
+           {onToggleBypass && (
              <button
                onClick={() => {
                  playSound('win');
-                 onUnlockAll();
+                 onToggleBypass();
                  onBack();
                }}
-               className="w-full py-3 mt-2 bg-sky-50 border-2 border-dashed border-sky-300 text-sky-600 font-bold rounded-xl hover:bg-sky-100 hover:border-sky-400 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm"
+               className={`w-full py-3 mt-2 border-2 text-sm font-bold rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 ${
+                 isBypassMode 
+                 ? 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200' 
+                 : 'bg-sky-50 border-dashed border-sky-300 text-sky-600 hover:bg-sky-100 hover:border-sky-400'
+               }`}
                title="Buka semua materi hingga Iqra 6 (Fitur Tester)"
              >
                <Unlock className="w-4 h-4" />
-               Buka Semua Materi (Bypass Tester)
+               {isBypassMode ? 'Matikan Bypass Tester' : 'Bypass Tester (Buka Semua Level)'}
              </button>
            )}
         </div>
@@ -201,6 +232,101 @@ export function Profile({ name, gender, isGuest, onSave, onBack, onReset, onUnlo
                    className="flex-1 bg-red-500 text-white p-3 sm:p-4 rounded-xl font-bold hover:bg-red-400 transition-all border-2 border-red-700 border-b-[4px] active:border-b-2 active:translate-y-[2px]"
                  >
                    Ya, Keluar
+                 </button>
+               </div>
+            </motion.div>
+          </div>
+        )}
+
+        {showConfirmResetProgress && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => { playSound('back'); setShowConfirmResetProgress(false); }}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm md:max-w-md w-full relative z-10 shadow-xl border-4 border-slate-200 flex flex-col items-center text-center"
+            >
+               <div className="w-16 h-16 bg-amber-100 text-amber-500 rounded-2xl flex items-center justify-center mb-4 rotate-3">
+                 <AlertTriangle className="w-8 h-8 -rotate-3" />
+               </div>
+               <h3 className="text-xl font-black text-slate-800 mb-2">Reset Progres?</h3>
+               <p className="text-slate-500 mb-8 font-medium leading-relaxed">
+                 Semua progres level dan bintang kamu akan dihapus dan diulang dari awal. <br/>
+                 <span className="font-bold text-amber-600 block mt-2">Tindakan ini tidak bisa dibatalkan!</span>
+               </p>
+               
+               <div className="flex flex-col-reverse sm:flex-row gap-3 w-full">
+                 <button 
+                   onClick={() => { playSound('back'); setShowConfirmResetProgress(false); }}
+                   className="flex-1 bg-slate-100 text-slate-600 p-3 sm:p-4 rounded-xl font-bold hover:bg-slate-200 active:scale-95 transition-all border-2 border-slate-200 border-b-[4px] active:border-b-2 active:translate-y-[2px]"
+                 >
+                   Batal
+                 </button>
+                 <button 
+                   onClick={() => {
+                     playSound('transition');
+                     setShowConfirmResetProgress(false);
+                     onResetProgress?.();
+                     onBack();
+                   }}
+                   className="flex-1 bg-amber-500 text-white p-3 sm:p-4 rounded-xl font-bold hover:bg-amber-400 transition-all border-2 border-amber-700 border-b-[4px] active:border-b-2 active:translate-y-[2px]"
+                 >
+                   Ya, Reset
+                 </button>
+               </div>
+            </motion.div>
+          </div>
+        )}
+
+        {showConfirmDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => { playSound('back'); setShowConfirmDelete(false); }}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm md:max-w-md w-full relative z-10 shadow-xl border-4 border-slate-200 flex flex-col items-center text-center"
+            >
+               <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-4 rotate-3">
+                 <AlertTriangle className="w-8 h-8 -rotate-3" />
+               </div>
+               <h3 className="text-xl font-black text-slate-800 mb-2">Hapus Akun Permanen?</h3>
+               <p className="text-slate-500 mb-8 font-medium leading-relaxed">
+                 Akun dan semua datamu akan dihapus selamanya dari sistem. <br/>
+                 <span className="font-bold text-red-500 block mt-2 bg-red-50 py-2 px-3 rounded-lg border border-red-100">Tidak bisa dikembalikan!</span>
+               </p>
+               
+               <div className="flex flex-col-reverse sm:flex-row gap-3 w-full">
+                 <button 
+                   onClick={() => { playSound('back'); setShowConfirmDelete(false); }}
+                   className="flex-1 bg-slate-100 text-slate-600 p-3 sm:p-4 rounded-xl font-bold hover:bg-slate-200 active:scale-95 transition-all border-2 border-slate-200 border-b-[4px] active:border-b-2 active:translate-y-[2px]"
+                 >
+                   Batal
+                 </button>
+                 <button 
+                   onClick={() => {
+                     playSound('transition');
+                     setShowConfirmDelete(false);
+                     onDeleteAccount?.();
+                   }}
+                   className="flex-1 bg-red-600 text-white p-3 sm:p-4 rounded-xl font-bold hover:bg-red-500 transition-all border-2 border-red-800 border-b-[4px] active:border-b-2 active:translate-y-[2px]"
+                 >
+                   Hapus Permanen
                  </button>
                </div>
             </motion.div>
