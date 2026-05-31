@@ -106,7 +106,7 @@ export function Dashboard({ name, gender, maxLevel, points, levelScores = {}, on
                     <Map className="w-3.5 h-3.5" /> Iqra {currentVolume}
                 </span>
                 <span className="text-emerald-50 font-bold text-xs sm:text-sm bg-black/10 px-2.5 py-1 rounded-lg backdrop-blur-sm">
-                  Tahap {currentStageInVolume}
+                  {currentStageInVolume === STAGES_PER_VOLUME ? 'Tahap Akhir' : `Tahap ${currentStageInVolume}`}
                 </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-white mb-2 leading-tight group-hover:scale-[1.02] origin-left transition-transform drop-shadow-md">

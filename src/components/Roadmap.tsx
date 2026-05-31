@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lock, Star, ArrowLeft, BookOpen, Trophy } from 'lucide-react';
+import { Lock, Star, ArrowLeft, BookOpen, Flag } from 'lucide-react';
 import { IQRA_VOLUMES, STAGES_PER_VOLUME } from '../data/hijaiyah';
 import { playSound } from '../lib/sounds';
 
@@ -166,7 +166,7 @@ const VOLUME_DESCRIPTIONS = [
                     {isUnlocked ? (
                       <div className="flex flex-col items-center">
                         {isExam ? (
-                          <Trophy className={`w-10 h-10 ${isCurrent ? 'text-amber-900 fill-amber-900 animate-[bounce_2s_infinite]' : 'text-amber-900 fill-amber-900'}`} />
+                          <Flag className={`w-10 h-10 ${isCurrent ? 'text-amber-900 fill-amber-900 animate-[bounce_2s_infinite]' : 'text-amber-900 fill-amber-900'}`} />
                         ) : (
                           <Star className={`w-10 h-10 ${isCurrent ? 'text-white fill-white animate-[bounce_2s_infinite]' : 'text-white fill-white'}`} />
                         )}
@@ -178,7 +178,7 @@ const VOLUME_DESCRIPTIONS = [
                     <div className={`absolute -bottom-4 bg-white px-4 py-2 rounded-2xl shadow-sm border-2 whitespace-nowrap font-black text-sm uppercase tracking-widest ${
                       isUnlocked ? (isExam ? 'text-amber-700 border-amber-200' : 'text-emerald-700 border-emerald-100') : 'text-slate-400 border-slate-200'
                     }`}>
-                      {isExam ? 'Ujian Akhir' : `Tahap ${((level - 1) % STAGES_PER_VOLUME) + 1}`}
+                      {isExam ? 'Tahap Akhir' : `Tahap ${((level - 1) % STAGES_PER_VOLUME) + 1}`}
                     </div>
                   </button>
                 </motion.div>

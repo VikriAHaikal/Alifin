@@ -195,7 +195,9 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
             <BookOpen className="w-4 h-4" />
             <span className="text-sm font-bold uppercase tracking-widest">Iqra {currentVolume}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-center mb-3">Tahap {currentStageInVolume}</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-center mb-3">
+            {currentStageInVolume === STAGES_PER_VOLUME ? 'Tahap Akhir' : `Tahap ${currentStageInVolume}`}
+          </h2>
           <div className="w-full bg-emerald-800/50 rounded-full h-3 sm:h-4 overflow-hidden border-2 border-emerald-600/30">
             <motion.div 
               className="bg-amber-300 h-full rounded-full"
