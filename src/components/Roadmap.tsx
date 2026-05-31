@@ -118,11 +118,11 @@ const VOLUME_DESCRIPTIONS = [
                     key={level}
                     d={`M ${startX} ${startY + 20} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY - 20}`}
                     fill="none"
-                    stroke="#cbd5e1"
+                    stroke="#ffffff"
                     strokeWidth="12"
                     strokeLinecap="round"
                     strokeDasharray="0 24"
-                    className="opacity-80"
+                    className="opacity-70"
                   />
                 );
               })}
@@ -243,11 +243,11 @@ const VOLUME_DESCRIPTIONS = [
                   key={vol}
                   d={`M ${startX} ${startY + 30} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY - 30}`}
                   fill="none"
-                  stroke="#94a3b8"
-                  strokeWidth="16"
+                  stroke="#ffffff"
+                  strokeWidth="14"
                   strokeLinecap="round"
-                  strokeDasharray="0 32"
-                  className="opacity-30"
+                  strokeDasharray="0 28"
+                  className="opacity-70"
                 />
               );
             })}

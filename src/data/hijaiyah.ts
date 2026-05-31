@@ -681,6 +681,254 @@ export const getLettersForLevel = (level: number) => {
     }
   }
 
+  if (volume === 4) {
+    if (level === 22) {
+      const iqra4Tahap1Data = [
+        { char: "بًا", parts: ["بًا"], name: "ban", hint: "Tanwin Fathah (an/fathatain). Bila ada alif setelahnya, alif tersebut dianggap tidak ada (dibaca pendek)." },
+        { char: "بٍ", parts: ["بٍ"], name: "bin", hint: "Tanwin Kasrah (in/kasratain) berada di bawah huruf, dibaca bin." },
+        { char: "بٌ", parts: ["بٌ"], name: "bun", hint: "Tanwin Dhammah (un/dhammatain) dibaca bun." },
+        { char: "بًا بٍ بٌ", parts: ["بًا", "بٍ", "بٌ"], name: "ban bin bun", hint: "Kombinasi 3 bentuk tanwin: an, in, un pada huruf Ba." },
+        { char: "تًا تٍ تٌ", parts: ["تًا", "تٍ", "تٌ"], name: "tan tin tun", hint: "Kombinasi 3 bentuk tanwin (an, in, un) pada huruf Ta." },
+        { char: "بَا بًا", parts: ["بَا", "بًا"], name: "baa ban", hint: "Bedakan Ba (panjang karena mad thabi'i) dan Ban (pendek karena tanwin fathah)." },
+        { char: "تَا تًا", parts: ["تَا", "تًا"], name: "taa tan", hint: "Perbedaan panjang pendek: Ta (panjang) dan Tan (pendek, alif tidak memanjangkan)." },
+        { char: "شَاكِرًا", parts: ["شَا", "كِ", "رًا"], name: "shaakiran", hint: "Penerapan: Shaa dibaca panjang (mad thabi'i), ki dan ran dibaca pendek." },
+        { char: "ثَابِتًا", parts: ["ثَا", "بِ", "تًا"], name: "tsaabitan", hint: "Tsa panjang, bi dan tan pendek." },
+        { char: "عَابِدٌ", parts: ["عَا", "بِ", "دٌ"], name: "'aabidun", hint: "'Aa panjang, bi dan dun pendek." },
+        { char: "حَاسِدٍ", parts: ["حَا", "سِ", "دٍ"], name: "haasidin", hint: "Haa panjang, si dan din pendek." },
+        { char: "عَمَلًا صَالِحًا", parts: ["عَ", "مَ", "لًا", "صَا", "لِ", "حًا"], name: "'amalan shaalihan", hint: "Sebuah kalimat (2 Kata): Perhatikan mana yang panjang (shaa) dan mana yang dibaca tanwin (lan, han)." },
+        { char: "كِتَابٌ نَافِعٌ", parts: ["كِ", "تَا", "بٌ", "نَا", "فِ", "عٌ"], name: "kitaabun naafi'un", hint: "2 Kata: Perhatikan mad thabi'i (taa, naa) dan tanwin dhammah (bun, 'un)." },
+        { char: "عَذَابٍ أَلِيمٍ", parts: ["عَ", "ذَا", "بٍ", "أَ", "لِي", "مٍ"], name: "'adzaabin aliimin", hint: "2 Kata bersambung: Perhatikan mad thabi'i dan tanwin kasrah (bin, min)." },
+        { char: "ثَوَابًا عَظِيمًا", parts: ["ثَ", "وَا", "بًا", "عَ", "ظِي", "مًا"], name: "tsawaaban 'adhiiman", hint: "Kalimat Kompleks: Evaluasi bacaan panjang dan pendekmu dengan tanwin." },
+      ];
+
+      return iqra4Tahap1Data.map(
+        (item, index) =>
+          ({
+            id: 122000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+
+    if (level === 23) {
+      const iqra4Tahap2Data = [
+        { char: "بَيْنَ", parts: ["بَيْ", "نَ"], name: "baina", hint: "Materi Baru: Ya mati (sukun) setelah Fathah menjadi ay, dibaca baina (pendek berayun)." },
+        { char: "بِينَا", parts: ["بِي", "نَا"], name: "biinaa", hint: "Bandingkan: Ya mati setelah Kasrah adalah Mad Thabi'i, dibaca bii panjang, naa panjang." },
+        { char: "لَيْلَةٌ", parts: ["لَيْ", "لَ", "ةٌ"], name: "lailatun", hint: "Review 1: Lai (ay) dengan Ta Marbuthoh (ة yang bulat pada akhir) bersuara tanwin un (tun)." },
+        { char: "عَلٰى", parts: ["عَ", "لٰى"], name: "'alaa", hint: "Review 2: Fathah berdiri di atas dibaca panjang (aa), meskpun di atas Ya tanpa titik (ى)." },
+        { char: "عَلَيْهَا", parts: ["عَ", "لَيْ", "هَا"], name: "'alaihaa", hint: "Penerapan Baru: 'Alai (ay pendek) menyambung cepat dilanjut haa (panjang)." },
+        { char: "لَهٗ", parts: ["لَ", "هٗ"], name: "lahuu", hint: "Review 3: Dhommah terbalik seperti angka 6 (ٗ) dibaca menjulur u panjang (huu)." },
+        { char: "عَيْنُهٗ", parts: ["عَيْ", "نُ", "هٗ"], name: "'ainuhuu", hint: "Kombinasi 1: 'Ai (ay) dipadu dengan huruf Ha berharakat Dhommah terbalik angka 6 (huu panjang)." },
+        { char: "اٰيَةٌ", parts: ["اٰ", "يَ", "ةٌ"], name: "aayatun", hint: "Review 4: Alif dengan Fathah berdiri (Aa panjang) bertemu Ta Marbuthoh (ة) tanwin." },
+        { char: "خَيْرٌ لَهٗ", parts: ["خَيْ", "رٌ", "لَ", "هٗ"], name: "khairun lahuu", hint: "Kombinasi 2: Khai (ay), run (tanwin dhammah), dan lahuu (Dhommah angka 6 panjang)." },
+        { char: "لَيْلٰى", parts: ["لَيْ", "لٰى"], name: "lailaa", hint: "Menjebak: Lai (ay pendek cepat) dan laa (Fathah berdiri di atas Ya tanpa titik, panjang)." },
+        { char: "بِهٖ", parts: ["بِ", "هٖ"], name: "bihii", hint: "Review 5: Kasrah berdiri di bawah (ٖ) dibaca meringis i panjang (hii)." },
+        { char: "فِي بَيْتِهٖ", parts: ["فِي", "بَيْ", "تِ", "هٖ"], name: "fii baitihii", hint: "Rangkaian: Fii (panjang ii), bai (ay cepat), dan tihii (Kasrah berdiri di bawah dibaca panjang ii)." },
+        { char: "عَيْنًا جَارِيَةً", parts: ["عَيْ", "نًا", "جَا", "رِ", "يَ", "ةً"], name: "'ainan jaariyatan", hint: "Kalimat Panjang: 'Ai (ay), nan (tanwin), jaa (panjang), ri, yatan (Ta Marbuthoh fathah tanwin)." },
+        { char: "عَلٰى زَيْتُوْنَةٍ", parts: ["عَ", "لٰى", "زَيْ", "تُوْ", "نَ", "ةٍ"], name: "'alaa zaituunatin", hint: "Multi Kompleks: Fathah berdiri (laa), Zai (ay), tuu (panjang mad), natin (Ta Marbuthoh kasrah tanwin)." },
+        { char: "هٰذِهٖ عَيْنُهٗ", parts: ["هٰ", "ذِ", "هٖ", "عَيْ", "نُ", "هٗ"], name: "haadzihii 'ainuhuu", hint: "Super Kompleks (Semua Fondasi): Fathah berdiri, Kasrah berdiri, Ay, dan Dhommah terbalik angka 6 panjang!" },
+      ];
+
+      return iqra4Tahap2Data.map(
+        (item, index) =>
+          ({
+            id: 123000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+
+    if (level === 24) {
+      const iqra4Tahap3Data = [
+        { char: "لَوْحَ", parts: ["لَوْ", "حَ"], name: "lauha", hint: "Materi Baru: Wau mati (sukun) setelah Fathah menjadi aw, dibaca lau (pendek berayun)." },
+        { char: "لُوْحَا", parts: ["لُوْ", "حَا"], name: "luuhaa", hint: "Bandingkan: Wau mati setelah Dhommah adalah Mad Thabi'i, dibaca luu panjang, haa panjang." },
+        { char: "يَوْمَ يُوْمَا", parts: ["يَوْ", "مَ", "يُوْ", "مَا"], name: "yauma yuumaa", hint: "Bedakan 2 kata: Yau dibaca menyambung cepat (aw), dan yuu dibaca menjulur u panjang berayun." },
+        { char: "قَوْمٌ", parts: ["قَوْ", "مٌ"], name: "qaumun", hint: "Kombinasi Tanwin Dhammah: Qau (aw cepat) + mun (tanwin dhammah pada huruf Mim)." },
+        { char: "مَوْلٰى", parts: ["مَوْ", "لٰى"], name: "maulaa", hint: "Review Fathah Berdiri: Mau (aw) + laa (fathah berdiri meskipun di atas Ya tanpa titik)." },
+        { char: "قَوْمُهٗ", parts: ["قَوْ", "مُ", "هٗ"], name: "qaumuhuu", hint: "Kombinasi Dhommah Angka 6: Qau (aw) + mu pendek + huu (dhommah terbalik angka 6 dibaca panjang uu)." },
+        { char: "رَوْضَةٍ", parts: ["رَوْ", "ضَ", "ةٍ"], name: "raudhatin", hint: "Review Ta Marbuthoh: Rau (aw) + dha pendek + tin (kasratain pada Ta Marbuthoh bulat)." },
+        { char: "بِقَوْمِهٖ", parts: ["بِ", "قَوْ", "مِ", "هٖ"], name: "biqaumihii", hint: "Kombinasi Kasrah Berdiri: bi + qau (aw) + mi + hii (kasrah berdiri di bawah, i panjang)." },
+        { char: "يَوْمَيْنِ", parts: ["يَوْ", "مَيْ", "نِ"], name: "yaumaini", hint: "Gabungan Dua Huruf Mati: Yau (wau sukun = aw) ditambah mai (ya sukun = ay)." },
+        { char: "سَوْفَ تَرٰى", parts: ["سَوْ", "فَ", "تَ", "رٰى"], name: "saufa taraa", hint: "Kalimat: Sau (aw cepat), fa ta pendek, dan raa (fathah berdiri panjang aa)." },
+        { char: "حَوْلَهٗ عَذَابٌ", parts: ["حَوْ", "لَ", "هٗ", "عَ", "ذَا", "بٌ"], name: "haulahuu 'adzaabun", hint: "Kalimat Kompleks 1: Hau (aw), huu (dhommah 6), dzaa (mad thabi'i aa), bun (tanwin un)." },
+        { char: "نَوْمًا طَوِيْلًا", parts: ["نَوْ", "مًا", "طَ", "وِيْ", "لًا"], name: "nauman thawiilan", hint: "Kalimat Kompleks 2: Nau (aw) bertemu man (fathatain), lalu thawiilan yang memadukan wii (mad) dan lan." },
+        { char: "فِيْ قَوْلِهٖ", parts: ["فِيْ", "قَوْ", "لِ", "هٖ"], name: "fii qaulihii", hint: "Kalimat Kompleks 3: Fii (ii panjang) bertemu qau (aw), ditutup dengan hii (kasrah berdiri)." },
+        { char: "صَوْتٌ بَيْنَهُمَا", parts: ["صَوْ", "تٌ", "بَيْ", "نَ", "هُ", "مَا"], name: "shautun bainahumaa", hint: "Mengecoh: Shau (aw) & tun dilanjut dengan bai (ay). Jangan tertukar aw dan ay." },
+        { char: "هٰذَا ثَوْبُهٗ فَوْقَهَا", parts: ["هٰ", "ذَا", "ثَوْ", "بُ", "هٗ", "فَوْ", "قَ", "هَا"], name: "haadzaa thaubuhuu fauqahaa", hint: "Super Kompleks (Ujian Fondasi Terakhir): Fathah berdiri, aw, dhommah 6 panjang, aw lagi, dan mad thabi'i aa!" },
+      ];
+
+      return iqra4Tahap3Data.map(
+        (item, index) =>
+          ({
+            id: 124000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+
+    if (level === 25) {
+      const iqra4Tahap4Data = [
+        { char: "أَمْ", parts: ["أَ", "مْ"], name: "am", hint: "Materi Baru: Mim mati (sukun), bibir terkatup dibaca am (pendek tegas)." },
+        { char: "أَنْ", parts: ["أَ", "نْ"], name: "an", hint: "Materi Baru: Nun mati (sukun), dibaca an (pendek), sama persis seperti tanwin an." },
+        { char: "كُمْ", parts: ["كُ", "مْ"], name: "kum", hint: "Penerapan Mim mati: Kum. Jangan memanjangkan bacaan, baca dengan tegas dan pendek." },
+        { char: "مِنْ", parts: ["مِ", "نْ"], name: "min", hint: "Penerapan Nun mati: Min. Suaranya persis seperti kasratain / tanwin kasrah (in)." },
+        { char: "أَنْعَمْتَ", parts: ["أَ", "نْ", "عَ", "مْ", "تَ"], name: "an'amta", hint: "Kombinasi Nun & Mim mati: An'amta. Suara 'an' dilanjut 'am' dalam satu kata." },
+        { char: "يَوْمَهُمْ", parts: ["يَوْ", "مَ", "هُ", "مْ"], name: "yaumahum", hint: "Review 1: Yau (wau mati dibaca aw) dipadu dengan mim mati pada bagian akhir (hum)." },
+        { char: "عَلَيْهِمْ", parts: ["عَ", "لَيْ", "هِ", "مْ"], name: "'alaihim", hint: "Review 2: 'Alai (ya mati dibaca ay) digabungkan dengan mim mati pada huruf him." },
+        { char: "مِنْهُ", parts: ["مِ", "نْ", "هُ"], name: "minhu", hint: "Penerapan: Minhu. Perhatikan Nun mati dan Hu dibaca pendek, kaidah yang paling sering ditemui dalam Al-Qur'an." },
+        { char: "عَنْهُمْ", parts: ["عَ", "نْ", "هُ", "مْ"], name: "'anhum", hint: "Penerapan Ganda: 'Anhum memuat Nun mati ('an) dan Mim mati (hum) sekaligus dalam satu kata." },
+        { char: "مِنْهَا", parts: ["مِ", "نْ", "هَا"], name: "minhaa", hint: "Review 3: Minhaa. Nun mati bertemu huruf haa dengan mad thabi'i aa (dibaca panjang)." },
+        { char: "هُمْ فِيْهَا", parts: ["هُ", "مْ", "فِيْ", "هَا"], name: "hum fiihaa", hint: "Kalimat Kompleks 1: Hum (mim mati) diikuti fiihaa (dua-duanya mad thabi'i panjang)." },
+        { char: "مِنْ خَوْفٍ", parts: ["مِ", "نْ", "خَوْ", "فٍ"], name: "min khaufin", hint: "Kalimat Kompleks 2: Min dilanjut khau (aw pendek) dan fin (tanwin kasrah pendek)." },
+        { char: "مِنْ دُوْنِهٖ", parts: ["مِ", "نْ", "دُوْ", "نِ", "هٖ"], name: "min duunihii", hint: "Kalimat Kompleks 3: Min diikuti duu (mad wau) dan hii (Kasrah berdiri i panjang)." },
+        { char: "لَهُمْ اٰيَةٌ", parts: ["لَ", "هُ", "مْ", "اٰ", "يَ", "ةٌ"], name: "lahum aayatun", hint: "Kalimat Kompleks 4: Hum, dilanjut Aa (fathah berdiri aa panjang), lalu yatun (Ta Marbuthoh ة)." },
+        { char: "مِنْ عَيْنٍ اٰنِيَةٍ", parts: ["مِ", "نْ", "عَيْ", "نٍ", "اٰ", "نِ", "يَ", "ةٍ"], name: "min 'ainin aaniyatin", hint: "Super Kompleks (Ujian): Min (n mati), 'ai (ay), nin (tanwin in), Aa (berdiri aa), niyatun -> aaniyatin (ةٍ)." },
+      ];
+
+      return iqra4Tahap4Data.map(
+        (item, index) =>
+          ({
+            id: 125000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+
+    if (level === 26) {
+      const iqra4Tahap5Data = [
+        { char: "أَبْ", parts: ["أَ", "بْ"], name: "ab", hint: "Qalqalah (Memantul): Ba sukun (mati) dibaca memantul menjadi ab (seperti memantulkan suara b)." },
+        { char: "أَجْ", parts: ["أَ", "جْ"], name: "aj", hint: "Qalqalah: Jim/Ja sukun (mati) dibaca memantul menjadi aj." },
+        { char: "أَدْ", parts: ["أَ", "دْ"], name: "ad", hint: "Qalqalah: Dal/Da sukun dibaca memantul menjadi ad." },
+        { char: "أَطْ", parts: ["أَ", "طْ"], name: "ath", hint: "Qalqalah: Tha/Tho sukun dibaca memantul kuat menjadi ath." },
+        { char: "أَقْ", parts: ["أَ", "قْ"], name: "aq", hint: "Qalqalah: Qaf/Qo sukun dibaca memantul tebal menjadi aq dari pangkal tenggorokan." },
+        { char: "أَبْصَارِهِمْ", parts: ["أَ", "بْ", "صَا", "رِ", "هِ", "مْ"], name: "abshaarihim", hint: "Penerapan Ba: ab (memantul), shaa (mad). Mim mati (him) jangan dipantulkan!" },
+        { char: "تَجْرِيْ", parts: ["تَ", "جْ", "رِيْ"], name: "tajrii", hint: "Penerapan Jim: taj (memantul), rii (mad thabi'i ya mati)." },
+        { char: "يَدْخُلُوْنَ", parts: ["يَ", "دْ", "خُ", "لُوْ", "نَ"], name: "yadkhuluuna", hint: "Penerapan Dal: yad (memantul), luu (mad thabi'i wau mati)." },
+        { char: "أَطْعَمَهُمْ", parts: ["أَ", "طْ", "عَ", "مَ", "هُ", "مْ"], name: "ath'amahum", hint: "Penerapan Tho: ath (memantul kuat), hum (mim mati tidak memantul)." },
+        { char: "نَقْذِفُ", parts: ["نَ", "قْ", "ذِ", "فُ"], name: "naqdzifu", hint: "Penerapan Qof: naq (pantulan tebal), dzi pendek, fu pendek." },
+        { char: "يُبْصِرُوْنَ", parts: ["يُ", "بْ", "صِ", "رُوْ", "نَ"], name: "yubshiruuna", hint: "Kombinasi 1: Yub (pantulan ba mati), ruu (panjang wau mati)." },
+        { char: "لَقَدْ كَانَ", parts: ["لَ", "قَ", "دْ", "كَا", "نَ"], name: "laqad kaana", hint: "Kombinasi 2: Dal sukun di akhir la-qad dibaca memantul, lalu kaana (panjang)." },
+        { char: "يَجْعَلُوْنَ", parts: ["يَ", "جْ", "عَ", "لُوْ", "نَ"], name: "yaj'aluuna", hint: "Kombinasi 3: Yaj memantul. Ingat, huruf mati yang memantul hanya Qaf, Tho, Ba, Jim, Dal (BA-JU DI THO-QO)." },
+        { char: "أَقْطَارِهَا", parts: ["أَ", "قْ", "طَا", "رِ", "هَا"], name: "aqthaarihaa", hint: "Menjebak: Aq pantulkan qaf sukun, thaa panjang (mad) bukan tho sukun, ri pendek, haa panjang." },
+        { char: "أَبْقٰى", parts: ["أَ", "بْ", "قٰى"], name: "abqaa", hint: "Review Kompleks: Ab (pantulan sukun ba) bertemu huruf qa yang memiliki fathah berdiri dibaca panjang berayun." },
+        { char: "لَقَدْ خَلَقْنَا", parts: ["لَ", "قَ", "دْ", "خَ", "لَ", "قْ", "نَا"], name: "laqad khalaqnaa", hint: "Kalimat Panjang 1: Terdapat dua pantulan Qalqalah (Dal sukun / ad, dan Qaf sukun / aq), diakhiri naa panjang." },
+        { char: "أَبْصَارِهِمْ غِشَاوَةٌ", parts: ["أَ", "بْ", "صَا", "رِ", "هِ", "مْ", "غِ", "شَا", "وَ", "ةٌ"], name: "abshaarihim ghishaawatun", hint: "Kalimat Panjang 2: Ba pantul, shaa panjang, mim mati tegaskan bibir, shaa panjang lagi, dan tun tanwin." },
+        { char: "يَدْخُلُوْنَ فِيْ دِيْنِ", parts: ["يَ", "دْ", "خُ", "لُوْ", "نَ", "فِيْ", "دِيْ", "نِ"], name: "yadkhuluuna fii diini", hint: "Kalimat Panjang 3: Dal pantul (yad), digabungkan ujian rentetan mad (luu, fii, dii semua dibaca panjang)." },
+        { char: "خَلَقْنَاكُمْ أَجْمَعِيْنَ", parts: ["خَ", "لَ", "قْ", "نَا", "كُ", "مْ", "أَ", "جْ", "مَ", "عِيْ", "نَ"], name: "khalaqnaakum ajma'iina", hint: "Kalimat Panjang 4: Qaf pantul, mad naa, mim mati kum, lalu Jim pantul membedakan dengan mim tadi." },
+        { char: "لَمْ يَلِدْ وَلَمْ يُوْلَدْ", parts: ["لَ", "مْ", "يَ", "لِ", "دْ", "وَ", "لَ", "مْ", "يُوْ", "لَ", "دْ"], name: "lam yalid walam yuulad", hint: "Ujian Terakhir: Mim mati (lam, walam) JANGAN DIPANTUL, Dal sukun (lid, lad) WAJIB MEMANTUL (Qalqalah). Yuu mad thabi'i." },
+      ];
+
+      return iqra4Tahap5Data.map(
+        (item, index) =>
+          ({
+            id: 126000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+
+    if (level === 27) {
+      const iqra4Tahap6Data = [
+        { char: "بَأْ", parts: ["بَ", "أْ"], name: "ba'", hint: "Pengenalan Hamzah Sukun: Suara ditekan dan diputus tegas dari pangkal tenggorokan. (Ditulis dengan apostrof: ' )." },
+        { char: "بَعْ", parts: ["بَ", "عْ"], name: "ba‘", hint: "Pengenalan 'Ain Sukun: Suara ditekan di tengah tenggorokan, tidak memantul. (Ditulis dengan koma terbalik: ‘ )." },
+        { char: "أَكْ", parts: ["أَ", "كْ"], name: "ak", hint: "Pengenalan Kaf Sukun: Ada desisan nafas halus (Hams) setelah huruf ditahan. JANGAN DIPANTULKAN." },
+        { char: "أَقْ", parts: ["أَ", "قْ"], name: "aq", hint: "Pengenalan Qaf Sukun: Huruf Qalqalah (BA-JU DI THO-QO). WAJIB DIPANTULKAN tebal dari pangkal tenggorokan." },
+        { char: "يَأْلَمُ", parts: ["يَ", "أْ", "لَ", "مُ"], name: "ya'lamu", hint: "Penerapan Hamzah ( ' ): Ya' (tertutup tegas terputus), lalu lamu." },
+        { char: "يَعْلَمُ", parts: ["يَ", "عْ", "لَ", "مُ"], name: "ya‘lamu", hint: "Penerapan 'Ain ( ‘ ): Ya‘ (lebar di tengah tenggorokan). Bandingkan rasanya dengan Hamzah mati!" },
+        { char: "أَكْبَرُ", parts: ["أَ", "كْ", "بَ", "رُ"], name: "akbaru", hint: "Penerapan Kaf Sukun: Ak (desis sedikit), lalu baru. Jangan dibaca ak-baru (jangan memantul)." },
+        { char: "أَقْبَلَ", parts: ["أَ", "قْ", "بَ", "لَ"], name: "aqbala", hint: "Penerapan Qaf Sukun: Aq (memantul kuat), bala. Beda sangat tegas dengan Kaf sabelumnya." },
+        { char: "تُؤْمِنُوْنَ", parts: ["تُ", "ؤْ", "مِ", "نُوْ", "نَ"], name: "tu'minuuna", hint: "Bentuk Lain Hamzah (ؤْ): Hamzah menumpang di atas Wau tetap dibaca sukun tegas (tu' putus), nuu (panjang mad)." },
+        { char: "يَعْمَلُوْنَ", parts: ["يَ", "عْ", "مَ", "لُوْ", "نَ"], name: "ya‘maluuna", hint: "Kombinasi 'Ain ( ‘ ): ya‘ (tengah tenggorokan), ma pendek, luu (mad wau panjang), na." },
+        { char: "يَكْتُبُوْنَ", parts: ["يَ", "كْ", "تُ", "بُوْ", "نَ"], name: "yaktubuuna", hint: "Pembedaan Kaf: yak (desis, tidak memantul), tu pendek, buu (mad thabi'i wau)." },
+        { char: "يَقْتُلُوْنَ", parts: ["يَ", "قْ", "تُ", "لُوْ", "نَ"], name: "yaqtuluuna", hint: "Pembedaan Qaf: yaq (pantulan Qalqalah tegas), tu pendek, luu panjang. Bandingkan dengan yaktubuuna!" },
+        { char: "مَأْكُوْلٍ", parts: ["مَ", "أْ", "كُوْ", "لٍ"], name: "ma'kuulin", hint: "Latihan Hamzah: Ma' (Hamzah putus), kuu (mad thabi'i wau ditahan), lin (tanwin kasrah)." },
+        { char: "مَعْلُوْمَاتٍ", parts: ["مَ", "عْ", "لُوْ", "مَا", "تٍ"], name: "ma‘luumaatin", hint: "Latihan 'Ain: Ma‘ ('Ain tenggorokan), luu (mad wau), maa (mad alif), tin (tanwin). Awas beda Hamzah dan 'Ain!" },
+        { char: "أَعْطَيْنَا", parts: ["أَ", "عْ", "طَيْ", "نَا"], name: "a‘thainaa", hint: "Kombinasi Super: a‘ ('Ain), thai (ya sukun / ay mati), naa (mad alif)." },
+        { char: "يَكْذِبُوْنَ", parts: ["يَ", "كْ", "ذِ", "بُوْ", "نَ"], name: "yakdzibuuna", hint: "Review Kaf (Jebakan Qalqalah): Yak (Kaf sukun Hams, JANGAN pantul!), dzi pendek, buu panjang, na." },
+        { char: "يَقْرَءُوْنَ", parts: ["يَ", "قْ", "رَ", "ءُوْ", "نَ"], name: "yaqra'uuna", hint: "Review Qaf & Hamzah: Yaq (Qaf memantul tebal), ra pendek, 'uu (Hamzah dhommah dilanjut wau panjang), na." },
+        { char: "فَيَعْلَمُوْنَ أَنَّهٗ", parts: ["فَ", "يَ", "عْ", "لَ", "مُوْ", "نَ", "أَ", "نَّ", "هٗ"], name: "faya‘lamuuna annahuu", hint: "Kalimat Panjang 1: 'Ain di tengah tenggorokan (ya‘), ditutup dengan Hu dhommah terbalik (angka 6 dibaca panjang u)." },
+        { char: "أَلَمْ يَجْعَلْ كَيْدَهُمْ", parts: ["أَ", "لَ", "مْ", "يَ", "جْ", "عَ", "لْ", "كَيْ", "دَ", "هُ", "مْ"], name: "alam yaj‘al kaidahum", hint: "Kalimat Panjang 2: lam (mim mati), yaj (jim pantul), ‘al ('Ain fathah lalu lam mati), kai (ay), hum (mim mati)." },
+        { char: "مَا يَأْتِيْهِمْ", parts: ["مَا", "يَ", "أْ", "تِيْ", "هِ", "مْ"], name: "maa ya'tiihim", hint: "Kalimat Panjang 3: maa (mad alif), ya' (hamzah putus tegas), tii (mad ya sukun), him (mim mati)." }
+      ];
+
+      return iqra4Tahap6Data.map(
+        (item, index) =>
+          ({
+            id: 127000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+
+    if (level === 28) {
+      const iqra4Tahap7Data = [
+        { char: "مِنْ خَوْفِهِمْ", parts: ["مِ", "نْ", "خَوْ", "فِ", "هِ", "مْ"], name: "min khaufihim", hint: "Evaluasi 1: min (nun mati), khau (au cepat), fi, him (mim mati bibir terkatup)." },
+        { char: "بِقَوْمِهٖ", parts: ["بِ", "قَوْ", "مِ", "هٖ"], name: "biqaumihii", hint: "Evaluasi 2: bi, qau (au), mi, hii (kasrah berdiri di bawah dibaca i panjang)." },
+        { char: "يَدْخُلُوْنَ", parts: ["يَ", "دْ", "خُ", "لُوْ", "نَ"], name: "yadkhuluuna", hint: "Evaluasi 3: yad (dal mati memantul/qalqalah), khu, luu (mad wau panjang), na." },
+        { char: "سَوْفَ تَعْلَمُوْنَ", parts: ["سَوْ", "فَ", "تَ", "عْ", "لَ", "مُوْ", "نَ"], name: "saufa ta‘lamuuna", hint: "Evaluasi 4: sau (au), fa, ta‘ ('Ain mati di tenggorokan, tidak mutus), la, muu (panjang), na." },
+        { char: "أَلَمْ يَأْتِيْكُمْ", parts: ["أَ", "لَ", "مْ", "يَ", "أْ", "تِيْ", "كُ", "مْ"], name: "alam ya'tiikum", hint: "Evaluasi 5: lam (mim mati), ya' (hamzah mati tegas!), tii (mad ya panjang), kum (mim mati)." },
+        { char: "وَلَمْ يُوْلَدْ", parts: ["وَ", "لَ", "مْ", "يُوْ", "لَ", "دْ"], name: "walam yuulad", hint: "Evaluasi 6: wa, lam (mim mati TIDAK memantul), yuu (mad wau), lad (dal Qalqalah WAJIB memantul)." },
+        { char: "لَقَدْ خَلَقْنَا", parts: ["لَ", "قَ", "دْ", "خَ", "لَ", "قْ", "نَا"], name: "laqad khalaqnaa", hint: "Evaluasi 7: qad (dal memantul), kha, laq (qaf memantul tebal), naa (mad alif panjang)." },
+        { char: "أَطْعَمَهُمْ مِنْ جُوْعٍ", parts: ["أَ", "طْ", "عَ", "مَ", "هُ", "مْ", "مِ", "نْ", "جُوْ", "عٍ"], name: "ath‘amahum min juu‘in", hint: "Evaluasi 8: ath (tho memantul tebal), 'a, ma, hum (mim mati), min (nun mati), juu (mad), 'in (tanwin dengan 'ain kasratain)." },
+        { char: "عَلٰى زَيْتُوْنَةٍ", parts: ["عَ", "لٰى", "زَيْ", "تُوْ", "نَ", "ةٍ"], name: "‘alaa zaituunatin", hint: "Evaluasi 9: ‘alaa (fathah berdiri aa), zai (ay), tuu (mad wau), natin (ta marbuthoh kasratain)." },
+        { char: "هٰذِهٖ اٰيَاتُهٗ", parts: ["هٰ", "ذِ", "هٖ", "اٰ", "يَا", "تُ", "هٗ"], name: "haadzihii aayaatuhuu", hint: "Ujian Tanda Panjang Khas: haa (berdiri), zhi, hii (kasrah berdiri), Aa (berdiri), yaa, tu, huu (angka 6)." },
+        { char: "يَقْطَعُوْنَ مَا بَيْنَهُمْ", parts: ["يَ", "قْ", "طَ", "عُوْ", "نَ", "مَا", "بَيْ", "نَ", "هُ", "مْ"], name: "yaqtha‘uuna maa bainahum", hint: "Evaluasi 11: yaq (qaf memantul), tha, ‘uu (mad wau), na, maa (mad alif), bai (ay), na, hum (mim mati)." },
+        { char: "يَكْسِبُوْنَ فِيْهَا", parts: ["يَ", "كْ", "سِ", "بُوْ", "نَ", "فِيْ", "هَا"], name: "yaksibuuna fiihaa", hint: "Evaluasi 12: yak (Kaf mati berdesis TAPI tidak memantul), si, buu, na, fii, haa (rentetan mad)." },
+        { char: "عَيْنُهٗ بَاكِيَةٌ", parts: ["عَيْ", "نُ", "هٗ", "بَا", "كِ", "يَ", "ةٌ"], name: "‘ainuhuu baakiyatun", hint: "Evaluasi 13: ‘ai (ay), nu, huu (angka 6 menjulur), baa (mad), ki, ya, tun (ta marbuthoh dammatain)." },
+        { char: "لَيْلٰى فِيْ بَيْتِهٖ", parts: ["لَيْ", "لٰى", "فِيْ", "بَيْ", "تِ", "هٖ"], name: "lailaa fii baitihii", hint: "Evaluasi 14: lai (ay), laa (fathah berdiri), fii, bai (ay), ti, hii (kasrah berdiri meringis panjang)." },
+        { char: "أَبْصَارِهِمْ غِشَاوَةٌ", parts: ["أَ", "بْ", "صَا", "رِ", "هِ", "مْ", "غِ", "شَا", "وَ", "ةٌ"], name: "abshaarihim ghishaawatun", hint: "Evaluasi 15: ab (ba memantul), shaa (mad), ri, him (mim mati), ghi, shaa (mad), wa, tun." },
+        { char: "لَمْ يَجْعَلْ لَهٗ وَلَدًا", parts: ["لَ", "مْ", "يَ", "جْ", "عَ", "لْ", "لَ", "هٗ", "وَ", "لَ", "دًا"], name: "lam yaj‘al lahuu waladan", hint: "Evaluasi 16: lam, yaj (jim memantul), ‘al ('ain fathah lalu lam mati), la, huu (dhommah angka 6), wa, la, dan (tanwin fathah)." },
+        { char: "خَلَقْنَاكُمْ أَجْمَعِيْنَ", parts: ["خَ", "لَ", "قْ", "نَا", "كُ", "مْ", "أَ", "جْ", "مَ", "عِيْ", "نَ"], name: "khalaqnaakum ajma‘iina", hint: "Evaluasi 17: laq (memantul), naa, kum (mim mati), aj (memantul), ma, ‘ii (panjang), na." },
+        { char: "وَمَا أَدْرَاكَ مَا يَوْمُ", parts: ["وَ", "مَا", "أَ", "دْ", "رَا", "كَ", "مَا", "يَوْ", "مُ"], name: "wamaa adraaka maa yaumu", hint: "Evaluasi 18: wa, maa, ad (dal memantul/qalqalah), raa (panjang), ka, maa, yau, mu." },
+        { char: "لَهُمْ عَذَابٌ أَلِيْمٌ", parts: ["لَ", "هُ", "مْ", "عَ", "ذَا", "بٌ", "أَ", "لِيْ", "مٌ"], name: "lahum ‘adzaabun aliimun", hint: "Evaluasi 19: hum (mim mati), ‘a, dzaa, bun (tanwin), a, lii, mun (tanwin dhammah)." },
+        { char: "يَأْكُلُوْنَ فِيْ بُيُوْتِهِمْ", parts: ["يَ", "أْ", "كُ", "لُوْ", "نَ", "فِيْ", "بُ", "يُوْ", "تِ", "هِ", "مْ"], name: "ya'kuluuna fii buyuutihim", hint: "Ujian Kelulusan Iqra 4: ya' (hamzah mati tegas putus, bukan ain), ku, luu, na, fii, bu, yuu, ti, him!" }
+      ];
+
+      return iqra4Tahap7Data.map(
+        (item, index) =>
+          ({
+            id: 128000 + index,
+            char: item.char,
+            parts: item.parts.filter((p) => p !== " "),
+            name: item.name,
+            idTTS: item.name.toLowerCase(),
+            arTTS: item.parts.filter((p) => p !== " ").join(" ، "),
+            hint: item.hint,
+          }) as any,
+      );
+    }
+  }
+
   if (volume === 2) {
     const pairs: typeof hijaiyahLetters = [];
 

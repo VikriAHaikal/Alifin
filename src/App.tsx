@@ -54,7 +54,7 @@ export default function App() {
     const saved = loadState('alifin_maxUnlockedLevel', 1);
     return Math.min(TOTAL_LEVELS, Math.max(1, saved));
   });
-  const [isBypassMode, setIsBypassMode] = useState(false);
+  const [isBypassMode, setIsBypassMode] = useState(true);
 
   const effectiveMaxLevel = isBypassMode ? TOTAL_LEVELS : maxUnlockedLevel;
   const [currentLevel, setCurrentLevel] = useState<number>(() => {
