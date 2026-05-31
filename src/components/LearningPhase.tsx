@@ -25,9 +25,9 @@ const getFontSize = (length: number) => {
 };
 
 const getNameFontSize = (length: number) => {
-  if (length > 20) return 'text-xl sm:text-2xl md:text-3xl';
-  if (length > 15) return 'text-xl sm:text-2xl md:text-3xl';
-  return 'text-2xl sm:text-3xl md:text-4xl';
+  if (length > 20) return 'text-sm sm:text-base md:text-lg';
+  if (length > 15) return 'text-base sm:text-lg md:text-xl';
+  return 'text-lg sm:text-xl md:text-2xl';
 };
 
 export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterIds = [], onComplete, onBack }: Props) {
@@ -36,6 +36,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
   const [learnedCount, setLearnedCount] = useState(0);
   const [learnedIds, setLearnedIds] = useState<Set<number>>(new Set());
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showHint, setShowHint] = useState(false);
   
   // Custom display for level mapping
   const currentVolume = Math.ceil(Math.min(level, IQRA_VOLUMES * STAGES_PER_VOLUME) / STAGES_PER_VOLUME);
@@ -64,7 +65,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [level, maxLevel, hasScore, wrongLettersStr]);
 
-  const playAudio = (letter: typeof letters[0]) => {
+  const playAudio = (letter: typeof letters[0], letterIndex?: number) => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
@@ -79,8 +80,8 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
     const currentStageInVolume = ((level - 1) % 7) + 1;
 
     if (currentVolume >= 2) {
-      // For Iqro 2 and above, use the combined recorded audio provided by user
-      const fileName = (letter as any).name || (letter as any).idTTS; // e.g., "Bata", "Taba"
+      // For Iqro 2 and above, use the index as file name (1.mp3, 2.mp3, etc.)
+      const fileName = letterIndex !== undefined ? (letterIndex + 1).toString() : ((letter as any).name || (letter as any).idTTS);
       urls = [`/audio/iqra-${currentVolume}/tahap-${currentStageInVolume}/${fileName}.mp3`];
     } else {
       // Iqra 1 fallback
@@ -232,7 +233,7 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
             transition={{ type: "spring", bounce: 0.5 }}
             whileHover={{ y: -4 }}
             whileTap={{ y: 4 }}
-            onClick={() => playAudio(currentLetter)}
+            onClick={() => playAudio(currentLetter, currentIndex)}
             className={`w-full max-w-sm sm:max-w-md md:max-w-2xl flex-1 min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center p-6 sm:p-8 relative transition-all cursor-pointer ${
               learnedIds.has(currentLetter.id) 
                 ? 'bg-white border-4 border-emerald-400 border-b-[12px] active:border-b-4 text-emerald-800 rounded-[3rem] active:mt-[8px]' 
@@ -263,9 +264,32 @@ export function LearningPhase({ level, maxLevel, hasScore = false, wrongLetterId
                 {currentLetter.name}
               </span>
               {currentLetter.hint && (
-                <p className="text-emerald-700/80 font-bold text-xs sm:text-sm md:text-base px-4 sm:px-5 text-center leading-relaxed bg-emerald-50 py-2 sm:py-3 rounded-xl border border-emerald-100 max-w-[90%] mx-auto whitespace-pre-line">
-                  💡 {currentLetter.hint}
-                </p>
+                <div 
+                  className="mt-2 text-center"
+                  onClick={(e) => { e.stopPropagation(); setShowHint(!showHint); }}
+                >
+                  <AnimatePresence mode="wait">
+                    {!showHint ? (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="text-xs sm:text-sm font-bold text-slate-400 bg-slate-50 border-2 border-slate-200 px-4 py-1.5 rounded-full hover:bg-slate-100 hover:text-slate-500 transition-colors inline-block md:mb-0 mb-4 cursor-pointer"
+                      >
+                        💡 Lihat Petunjuk
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="text-emerald-700/80 font-bold text-xs sm:text-sm md:text-base px-4 sm:px-5 text-center leading-relaxed bg-emerald-50 py-2 sm:py-3 rounded-xl border border-emerald-100 max-w-[90%] mx-auto whitespace-pre-line inline-block"
+                      >
+                        💡 {currentLetter.hint}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
             </div>
           </motion.button>
